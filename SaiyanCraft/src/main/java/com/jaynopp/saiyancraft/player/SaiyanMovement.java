@@ -3,10 +3,12 @@ package com.jaynopp.saiyancraft.player;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 import com.jaynopp.saiyancraft.input.KeyBindings;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.MoverType;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.settings.KeyBindingMap;
 
@@ -15,7 +17,7 @@ public class SaiyanMovement {
 	private Vec3d lastGroundVel, relativeVelocity, velocity;
 	private boolean previouslyGrounded;
 	private SaiyanPlayer splayer;
-	private EntityPlayerSP player;
+	private EntityPlayer player;
 	
 	private boolean triedToMoveLastFrame;
 	private boolean triedToJumpLastFrame;
@@ -67,6 +69,14 @@ public class SaiyanMovement {
 	}
 	
 
+	private Vec3d GetMoveInputVector(){
+		EntityPlayerSP p = Minecraft.getMinecraft().player;
+		double strafe = p.movementInput.rightKeyDown ? 1d : p.movementInput.leftKeyDown ? -1d : 0d;
+		double forward = p.movementInput.forwardKeyDown ? 1d : p.movementInput.backKeyDown ? -1d : 0d;
+		
+		triedToMoveLastFrame = strafe != 0d || forward != 0d;
+		return new Vec3d(-strafe, 0, forward).normalize();
+	}
 
 	public void Update(DefaultSaiyanData data) {
 		this.data = data;
@@ -90,19 +100,18 @@ public class SaiyanMovement {
 			jumping = false;
 			jumpedHeight = 0d;
 			highestSpeedInJump = 0d;
-			double strafe = player.movementInput.rightKeyDown ? 1d : player.movementInput.leftKeyDown ? -1d : 0d;
-			double forward = player.movementInput.forwardKeyDown ? 1d : player.movementInput.backKeyDown ? -1d : 0d;
+			if (player == Minecraft.getMinecraft().player){
+				Vec3d move = GetMoveInputVector();
 			
-			triedToMoveLastFrame = strafe != 0d || forward != 0d;
-			Vec3d move = new Vec3d(-strafe, 0, forward).normalize();
-			Vec3d acc = move.scale(acceleration * currSpeedLimit);
-			if (inLava)
-				acc = acc.scale(.2d);
-			if (inWater)
-				acc = acc.scale(.5d);
+				Vec3d acc = move.scale(acceleration * currSpeedLimit);
 			
-			velocity = velocity.add(acc.rotateYaw((float)Math.toRadians(-player.rotationYaw)));
-			
+				if (inLava)
+					acc = acc.scale(.2d);
+				if (inWater)
+					acc = acc.scale(.5d);
+				
+				velocity = velocity.add(acc.rotateYaw((float)Math.toRadians(-player.rotationYaw)));
+			}
 			if (!previouslyGrounded)
 				GroundedChange(true);
 			if (player.velocityChanged)
@@ -137,12 +146,16 @@ public class SaiyanMovement {
 		
 		relativeVelocity = velocity.rotateYaw((float)Math.toRadians(player.rotationYaw));
 		player.setVelocity(velocity.xCoord * SPEED_MOD, player.motionY, velocity.zCoord * SPEED_MOD);
-
-		if (!player.movementInput.jump && player.onGround && !canJump)
-			canJump = true;
 		
-		
-		triedToJumpLastFrame = player.movementInput.jump;
+		EntityPlayerSP p = Minecraft.getMinecraft().player;
+		if (player == p){
+			
+			if (!p.movementInput.jump && player.onGround && !canJump)
+				canJump = true;
+			
+			
+			triedToJumpLastFrame = p.movementInput.jump;
+		}
 	}
 
 	public void OnJump() {

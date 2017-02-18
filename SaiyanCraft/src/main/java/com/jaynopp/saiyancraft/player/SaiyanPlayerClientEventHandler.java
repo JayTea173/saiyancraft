@@ -25,7 +25,7 @@ public class SaiyanPlayerClientEventHandler {
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer) {
         	if (event.getEntity().world.isRemote)
-        		SaiyanPlayer.Initialize();
+        		SaiyanPlayer.Initialize((EntityPlayer)event.getEntity());
         }
     }
 	
