@@ -1,0 +1,16 @@
+{
+  "forge_marker":1,
+  "defaults":{
+    "textures":{
+      "all": "saiyancraft:blocks/test_block"
+    }
+  },
+  "variants":{
+    "inventory":{
+	"model": "cube_all"
+	},
+    "normal":{
+	"model": "cube_all"
+	}
+  }
+}

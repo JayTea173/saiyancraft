@@ -1,0 +1,16 @@
+[
+{
+  "modid": "sayancraft",
+  "name": "SayanCraft",
+  "description": "this mod adds FREEZER!!!",
+  "version": "1.0.0",
+  "mcversion": "1.11.2",
+  "url": "niceme.me",
+  "updateUrl": "",
+  "authorList": ["JayDev", "Renopp"],
+  "credits": "Jaynopp",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

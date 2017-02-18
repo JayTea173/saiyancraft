@@ -1,0 +1,6 @@
+{
+	"parent": "item/handheld",
+    "textures": {
+        "layer0": "saiyancraft:items/tools/saiyan_pickaxe"
+    }
+}
