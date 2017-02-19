@@ -3,24 +3,28 @@ package com.jaynopp.saiyancraft.player;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.input.Keyboard;
+
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.DefaultSaiyanBattler;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
-import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
-import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataProvider;
-import com.jaynopp.saiyancraft.eventhandlers.EventHandler;
-import com.jaynopp.saiyancraft.lib.Names.Items;
+import com.jaynopp.saiyancraft.input.KeyBindings;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
-import net.minecraftforge.common.MinecraftForge;
+import net.minecraft.util.EnumHand;
 
 public class SaiyanPlayer {
 
+	public static final int TPS = 40;
+	public static final float DT = 1f / (float)TPS;
 	public static SaiyanPlayer local;
 	public EntityPlayer player;
 	public SaiyanMovement movement;
 	private boolean blocking;
+	private boolean chargingHeavy;
+	public float attackCharge;
+	
+	private int oldAttackKeyCode; //used for disabling vanilla attack when left clicking
 	
 	
 	public static List<SaiyanPlayer> players = new ArrayList<SaiyanPlayer>();
@@ -34,8 +38,12 @@ public class SaiyanPlayer {
 		movement = new SaiyanMovement(this);
 	}
 	
-	public DefaultSaiyanData GetData(){
+	public DefaultSaiyanData GetStats(){
 		return DefaultSaiyanData.Get(player);
+	}
+	
+	public DefaultSaiyanBattler GetBattler(){
+		return DefaultSaiyanBattler.Get(player);
 	}
 
 	public static void Initialize(EntityPlayer player){
@@ -46,8 +54,36 @@ public class SaiyanPlayer {
 	}
 	
 	public void Update(){
-		DefaultSaiyanData data = GetData();
+		
+		DefaultSaiyanData data = GetStats();
+		if (chargingHeavy){
+			attackCharge += .04f;
+			if (attackCharge > 1f)
+				attackCharge = 1f;
+		}
+		
+		if (IsLocalPlayer()){
+			if (isPlayerEntityUsingFists(player)){
+				if (Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode() != Keyboard.KEY_NONE){
+					oldAttackKeyCode = Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode();
+					Minecraft.getMinecraft().gameSettings.keyBindAttack.setKeyCode(Keyboard.KEY_NONE);
+					KeyBindings.light_attack.binding.setKeyCode(-100);
+				}
+			} else {
+				if (Minecraft.getMinecraft().gameSettings.keyBindAttack.getKeyCode() == Keyboard.KEY_NONE){
+					Minecraft.getMinecraft().gameSettings.keyBindAttack.setKeyCode(oldAttackKeyCode);	
+					KeyBindings.light_attack.binding.setKeyCode(Keyboard.KEY_NONE);
+				}
+			}
+				
+		}
+		
 		movement.Update(data);
+		
+	}
+	
+	public boolean IsLocalPlayer(){
+		return player == Minecraft.getMinecraft().player;
 	}
 
 	public void OnJump() {
@@ -55,7 +91,19 @@ public class SaiyanPlayer {
 		
 	}
 	
+	public boolean isBlocking(){
+		return blocking;
+	}
+	
 	public static boolean isPlayerEntityUsingFists(EntityPlayer player){
+		if (player.getHeldItemMainhand().getItem() == net.minecraft.init.Items.AIR && player.getHeldItemOffhand().getItem() == net.minecraft.init.Items.AIR)
+			return true;
+		
+		return false;
+	}
+	
+	public static boolean isPlayerEntityUsingFists(){
+		EntityPlayer player = Minecraft.getMinecraft().player;
 		if (player.getHeldItemMainhand().getItem() == net.minecraft.init.Items.AIR && player.getHeldItemOffhand().getItem() == net.minecraft.init.Items.AIR)
 			return true;
 		;
@@ -63,7 +111,7 @@ public class SaiyanPlayer {
 	}
 	
 	public boolean UseStamina(float amount){
-		DefaultSaiyanData data = GetData();
+		DefaultSaiyanData data = GetStats();
 		float curr = data.GetStamina();
 		if (curr >= amount){
 			data.SetStamina(curr - amount);
@@ -72,5 +120,21 @@ public class SaiyanPlayer {
 			data.SetStamina(0f);
 			return curr > 0f;
 		}
+	}
+
+	public boolean isChargingHeavy() {
+		return chargingHeavy;
+	}
+
+	public void setChargingHeavy(boolean chargingHeavy) {
+		this.chargingHeavy = chargingHeavy;
+		if (chargingHeavy)
+			attackCharge = 0f;
+		
+	}
+
+	public void LightAttack() {
+		player.swingArm(EnumHand.MAIN_HAND);
+		
 	}
 }

@@ -1,8 +1,5 @@
 package com.jaynopp.saiyancraft.player;
 
-import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
-import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 

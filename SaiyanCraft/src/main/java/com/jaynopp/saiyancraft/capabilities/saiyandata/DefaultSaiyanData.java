@@ -1,8 +1,5 @@
 package com.jaynopp.saiyancraft.capabilities.saiyandata;
 
-import java.util.UUID;
-
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -49,7 +46,6 @@ public class DefaultSaiyanData implements ISaiyanData {
 		//DefaultSaiyanData cap = (DefaultSaiyanData) player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
 		if (cap == null)
 			return;
-		double pl = cap.GetPowerLevel();
 		float end = cap.GetEndurance();
 		cap.staminaMax = (float)(100d + Math.pow(end - 1d, .75d) * 10d);
 	}

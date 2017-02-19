@@ -13,7 +13,7 @@ public class SaiyanBattlerProvider implements ICapabilitySerializable<NBTBase> {
 	public static final Capability<ISaiyanBattler> BATTLER_CAP = null;
 	
 	private ISaiyanBattler instance = BATTLER_CAP.getDefaultInstance();
-			
+	
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing){
 		return capability == BATTLER_CAP;
@@ -26,6 +26,7 @@ public class SaiyanBattlerProvider implements ICapabilitySerializable<NBTBase> {
 	
 	@Override
 	public NBTBase serializeNBT(){
+
 		return (NBTTagCompound) BATTLER_CAP.getStorage().writeNBT(BATTLER_CAP, instance, null);
 	}
 	

@@ -1,14 +1,14 @@
 package com.jaynopp.saiyancraft.gui;
 
-import org.lwjgl.opengl.GL11;
-
 import com.jaynopp.saiyancraft.SaiyanCraft;
-import com.jaynopp.saiyancraft.capabilities.saiyandata.*;
+import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
+import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
+import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataProvider;
+import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 
 public class SaiyanPlayerStatusGui extends GuiScreen {
@@ -43,7 +43,7 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 		drawTexturedModalRect(centerX, centerY, 0, 0, guiWidth, guiHeight);
 		
 		Minecraft.getMinecraft().renderEngine.bindTexture(plTexture);
-		this.drawModalRectWithCustomSizedTexture(centerX-8, centerY + 8, 0, 0, 24, 24, 24f, 24f);
+		drawModalRectWithCustomSizedTexture(centerX-8, centerY + 8, 0, 0, 24, 24, 24f, 24f);
 		//Minecraft.getMinecraft().renderEngine.bindTexture(plTexture);
 		//drawTexturedModalRect(centerX + 4, centerY + 16, 0, 0, 32, 32);
 		fontRendererObj.FONT_HEIGHT = 18;

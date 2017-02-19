@@ -1,7 +1,6 @@
 package com.jaynopp.saiyancraft.crafting;
 
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 
 public class RecipeDifficultyRater {
 	public static float RateCraftMatrix(IInventory craftMatrix){

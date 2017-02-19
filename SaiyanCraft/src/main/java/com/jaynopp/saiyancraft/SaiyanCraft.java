@@ -1,12 +1,13 @@
 package com.jaynopp.saiyancraft;
 
-import com.jaynopp.saiyancraft.ClientProxy;
-import com.jaynopp.saiyancraft.CommonProxy;
-import com.jaynopp.saiyancraft.capabilities.saiyandata.*;
-import com.jaynopp.saiyancraft.init.ModItems;
+import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataMessageHandler;
+import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 import com.jaynopp.saiyancraft.item.ItemValueManager;
-import com.jaynopp.saiyancraft.player.*;
+import com.jaynopp.saiyancraft.player.ClientPlayerFallMessage;
+import com.jaynopp.saiyancraft.player.ServerSaiyanPlayerMessageHandler;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -26,6 +27,7 @@ public class SaiyanCraft
     public static final String resourcePrefix = modId.toLowerCase() + ":";
     
     public static SimpleNetworkWrapper network;
+    public static SoundHandler soundHandler;
     
     @SidedProxy(serverSide = "com.jaynopp.saiyancraft.CommonProxy", clientSide = "com.jaynopp.saiyancraft.ClientProxy")
     public static CommonProxy proxy;
@@ -41,6 +43,7 @@ public class SaiyanCraft
     	network.registerMessage(SaiyanDataMessageHandler.class, SyncSaiyanDataMessage.class, 0, Side.SERVER);
     	network.registerMessage(SaiyanDataMessageHandler.class, SyncSaiyanDataMessage.class, 0, Side.CLIENT);
     	network.registerMessage(ServerSaiyanPlayerMessageHandler.class, ClientPlayerFallMessage.class, 1, Side.SERVER);
+    	soundHandler = Minecraft.getMinecraft().getSoundHandler();
     	proxy.preInit(event);
     }
     

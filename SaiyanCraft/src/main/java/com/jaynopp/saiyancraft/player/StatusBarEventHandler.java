@@ -14,6 +14,7 @@ public class StatusBarEventHandler {
 		switch (etype){
 		case HEALTH:
 			SaiyanHud.inst.DrawHealth(event);
+			SaiyanHud.inst.DrawCharge(event);
 			event.setCanceled(true);
 			break;
 		case ARMOR:

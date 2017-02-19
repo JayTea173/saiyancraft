@@ -16,12 +16,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class SaiyanPickaxe extends ItemPickaxe implements JNItemInitializer {
 	
@@ -41,7 +39,7 @@ public class SaiyanPickaxe extends ItemPickaxe implements JNItemInitializer {
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, EntityPlayer player, List list, boolean p4){
+	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean p4){
 		if (!dirty){
 			String formattedPowerlevelStone = ISaiyanData.PLToString(GetNBTFieldDouble(stack, "powerLevel", 0d) * 4d, GuiScreen.isShiftKeyDown());
 			list.add("+Powerlevel (Rocks): " + formattedPowerlevelStone);
@@ -169,12 +167,12 @@ public class SaiyanPickaxe extends ItemPickaxe implements JNItemInitializer {
 	
 	}
 	
-	private int GetRepairAmount(ItemStack material){
+	/*private int GetRepairAmount(ItemStack material){
 
 		System.out.println("Fuel of " + material.getItem().getUnlocalizedName() + ": " + GameRegistry.getFuelValue(material));
 		return TileEntityFurnace.getItemBurnTime(material);
 
-	}
+	}*/
 	
 	@Override
 	public boolean getIsRepairable(ItemStack repaired, ItemStack material){

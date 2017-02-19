@@ -1,35 +1,23 @@
 package com.jaynopp.saiyancraft.player;
 
-import java.util.Iterator;
-
-import com.google.common.collect.Iterators;
 import com.jaynopp.saiyancraft.SaiyanCraft;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
-import com.jaynopp.saiyancraft.crafting.RecipeDifficultyRater;
 import com.jaynopp.saiyancraft.damagesources.SaiyanDamageSource;
+import com.jaynopp.saiyancraft.init.ModSounds;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.math.Vec3d;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.AttackEntityEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
+import scala.util.Random;
 
 public class SaiyanPlayerCommonEventHandler {
 	@SubscribeEvent
@@ -51,7 +39,7 @@ public class SaiyanPlayerCommonEventHandler {
 			float curr = data.GetAgility();
 			float bonus = (float) (Math.pow(curr, -.25d) * .00085d);
 			data.SetAgility(curr + bonus);
-			data.UpdateSpeed(DefaultSaiyanData.Get(player), player);
+			DefaultSaiyanData.UpdateSpeed(DefaultSaiyanData.Get(player), player);
 		}
 	}
 	
@@ -64,7 +52,7 @@ public class SaiyanPlayerCommonEventHandler {
 	
 	@SubscribeEvent
 	public void onPlayerCraft(ItemCraftedEvent event){
-		DefaultSaiyanData data = DefaultSaiyanData.Get(event.player);
+		DefaultSaiyanData.Get(event.player);
 		System.out.println("value of crafted: " + SaiyanCraft.itemValueManager.GetValue(event.crafting.getItem()));
 	}
 	
@@ -77,7 +65,7 @@ public class SaiyanPlayerCommonEventHandler {
 			float bonus = (float) (Math.pow(event.getAmount() / curr, 1.4d) * .0025d);
 			System.out.println("Player was hurt! Vitality increased by " + bonus);
 			data.SetVitality(curr + bonus);
-			data.UpdateStats(player);
+			DefaultSaiyanData.UpdateStats(player);
 		}
 	}
 	
@@ -114,6 +102,11 @@ public class SaiyanPlayerCommonEventHandler {
 		EntityPlayer player = event.getEntityPlayer();
 		Entity target = event.getTarget();
 		if (SaiyanPlayer.isPlayerEntityUsingFists(player)){
+			player.swingProgressInt = 0;
+            player.isSwingInProgress = false;
+            player.swingProgress = 0f;
+            System.out.println("FIST EM DADDY");
+            event.setCanceled(true);
 			DefaultSaiyanData data = DefaultSaiyanData.Get(player);
 			float curr = data.GetStrength();
 			float damage = 1f + (float)Math.pow(curr-1d, 0.925d);
@@ -121,12 +114,15 @@ public class SaiyanPlayerCommonEventHandler {
 			
 			if (target instanceof EntityLivingBase){
 				EntityLivingBase targetLiving = (EntityLivingBase) target;
-				
-				float bonus = (float) (1d / Math.pow(curr, .25d) * .0025d);
-				System.out.println("Player is attacking! Strength increased by " + bonus);
-				data.SetStrength(curr + bonus);
-				event.getTarget().attackEntityFrom(new SaiyanDamageSource("saiyandamage.entity", event.getEntityPlayer(), null), damage);
-			
+				if (targetLiving.hurtResistantTime <= 0){
+					float bonus = (float) (1d / Math.pow(curr, .25d) * .0025d);
+					System.out.println("Player is attacking! Strength increased by " + bonus);
+					Random rand = new Random();
+					targetLiving.playSound(ModSounds.PUNCH_LIGHT, 1f, .9f + rand.nextFloat() * .2f);
+					data.SetStrength(curr + bonus);
+					event.getTarget().attackEntityFrom(new SaiyanDamageSource("saiyandamage.entity", event.getEntityPlayer(), null), damage);
+					targetLiving.hurtResistantTime = ((EntityLivingBase) target).maxHurtResistantTime / 16;
+				}
 			}
 		} else {
 			System.out.println("Player attacked with an item!");
@@ -135,8 +131,8 @@ public class SaiyanPlayerCommonEventHandler {
 	
 	private void HandleAttackedPlayer(AttackEntityEvent event){
 		EntityPlayer player = (EntityPlayer)event.getTarget();
-		Entity attacker = event.getTarget();
-		DefaultSaiyanData data = DefaultSaiyanData.Get(player);
+		event.getTarget();
+		DefaultSaiyanData.Get(player);
 		
 		
 	}

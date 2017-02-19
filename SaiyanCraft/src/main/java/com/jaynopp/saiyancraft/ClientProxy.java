@@ -1,16 +1,5 @@
 package com.jaynopp.saiyancraft;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.item.Item;
-import net.minecraftforge.client.model.ModelLoader;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.FMLCommonHandler;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-
-import com.jaynopp.saiyancraft.SaiyanCraft;
 import com.jaynopp.saiyancraft.init.ModBlocks;
 import com.jaynopp.saiyancraft.init.ModItems;
 import com.jaynopp.saiyancraft.input.KeyBindings;
@@ -18,6 +7,13 @@ import com.jaynopp.saiyancraft.input.KeyInputHandler;
 import com.jaynopp.saiyancraft.player.SaiyanPlayerClientEventHandler;
 import com.jaynopp.saiyancraft.player.StatusBarEventHandler;
 import com.jaynopp.saiyancraft.player.gui.SaiyanHud;
+
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy extends CommonProxy {
 	SaiyanHud hud;
@@ -28,6 +24,7 @@ public class ClientProxy extends CommonProxy {
 		super.preInit(event);
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void init(FMLInitializationEvent event){
 		super.init(event);
