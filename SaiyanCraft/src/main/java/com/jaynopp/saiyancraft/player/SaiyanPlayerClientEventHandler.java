@@ -41,8 +41,8 @@ public class SaiyanPlayerClientEventHandler {
 		if (event.getEntity() == Minecraft.getMinecraft().player){
 			if (SaiyanPlayer.local.UseStamina(2f))
 				SaiyanPlayer.local.OnJump();
-			else
-				event.setCanceled(true);
+			
+
 		}
 	}
 	

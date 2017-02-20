@@ -11,6 +11,8 @@ import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
+import net.minecraft.block.state.BlockStateContainer;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -89,8 +91,8 @@ public class BlockTest extends Block implements JNBlockInitializer{
 	public static final PropertyEnum TYPE = PropertyEnum.create("type", BlockTest.EnumType.class);
 	
 	@Override
-	protected BlockState createBlockState() {
-	    return new BlockState(this, new IProperty[] { TYPE });
+	protected BlockStateContainer createBlockState() {
+	    return new BlockStateContainer(this, new IProperty[] { TYPE });
 	}
 	
 	@Override

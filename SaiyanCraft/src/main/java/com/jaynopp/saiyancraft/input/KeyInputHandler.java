@@ -1,5 +1,6 @@
 package com.jaynopp.saiyancraft.input;
 
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.DefaultSaiyanBattler;
 import com.jaynopp.saiyancraft.gui.SaiyanPlayerStatusGui;
 import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 
@@ -13,6 +14,7 @@ public class KeyInputHandler {
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if(KeyBindings.openSaiyanGUI.isPressed()){
         	Minecraft.getMinecraft().displayGuiScreen(new SaiyanPlayerStatusGui());
+        	System.out.println("You have " + DefaultSaiyanBattler.Get(Minecraft.getMinecraft().player).GetMoves().size() + " moves");
         }
         if (KeyBindings.block.isPressed()){
         	SaiyanPlayer.local.Block(true);

@@ -1,19 +1,15 @@
 package com.jaynopp.saiyancraft;
 
-import java.io.IOException;
-
 import com.jaynopp.saiyancraft.init.ModBlocks;
 import com.jaynopp.saiyancraft.init.ModItems;
 import com.jaynopp.saiyancraft.input.KeyBindings;
 import com.jaynopp.saiyancraft.input.KeyInputHandler;
 import com.jaynopp.saiyancraft.item.ItemEventHandler;
-import com.jaynopp.saiyancraft.item.ItemValueManager;
 import com.jaynopp.saiyancraft.player.SaiyanPlayerClientEventHandler;
 import com.jaynopp.saiyancraft.player.StatusBarEventHandler;
 import com.jaynopp.saiyancraft.player.gui.SaiyanHud;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.Item;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;

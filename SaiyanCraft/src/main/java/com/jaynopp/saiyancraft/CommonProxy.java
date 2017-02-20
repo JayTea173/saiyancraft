@@ -16,14 +16,11 @@ import com.jaynopp.saiyancraft.player.SaiyanPlayerCommonEventHandler;
 import com.jaynopp.saiyancraft.storage.SaiyanBattlerStorage;
 import com.jaynopp.saiyancraft.storage.SayanDataStorage;
 
-import net.minecraft.init.Blocks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class CommonProxy {
 

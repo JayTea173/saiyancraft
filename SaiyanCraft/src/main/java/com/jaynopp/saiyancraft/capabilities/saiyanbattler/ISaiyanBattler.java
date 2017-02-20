@@ -2,9 +2,12 @@ package com.jaynopp.saiyancraft.capabilities.saiyanbattler;
 
 import java.util.List;
 
+import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
 
 public interface ISaiyanBattler {
 	
@@ -12,13 +15,17 @@ public interface ISaiyanBattler {
 	public boolean IsOnCooldown();
 	public void AddCooldown(float cooldown);
 	public void SetCooldown(float cooldown);
-	public void Update();
+	public void Update(SaiyanPlayer player);
 	public float GetStunTimeLeft();
 	public boolean IsStunned();
 	public void AddStunTime(float stunTime);
 	public void SetStunTime(float stunTime);
 	public boolean CanAttack();
 	public void UpdateFrom(ISaiyanBattler other);
+	public EntityLiving GetOwningEntity();
+	public EntityPlayer GetOwningPlayer();
+	public void SetOwner(EntityLiving owner);
+	public void SetOwner(EntityPlayer owner);
 	public List<ISaiyanMove> GetMoves();
 	
 

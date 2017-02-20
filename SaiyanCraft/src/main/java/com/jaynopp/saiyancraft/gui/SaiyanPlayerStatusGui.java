@@ -1,10 +1,15 @@
 package com.jaynopp.saiyancraft.gui;
 
+import java.util.List;
+
 import com.jaynopp.saiyancraft.SaiyanCraft;
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.ISaiyanBattler;
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.SaiyanBattlerProvider;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataProvider;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
+import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -50,29 +55,37 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 		String playerName = Minecraft.getMinecraft().player.getName();
 		drawString(fontRendererObj, playerName, (width / 2) - fontRendererObj.getStringWidth(playerName) / 2, centerY + 2, 0xffffff);
 		
-		ISaiyanData cap = Minecraft.getMinecraft().player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
+		ISaiyanData data = Minecraft.getMinecraft().player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
 		
-		String statStr = ISaiyanData.PLToString(cap.GetPowerLevel(), isShiftKeyDown());
+		String statStr = ISaiyanData.PLToString(data.GetPowerLevel(), isShiftKeyDown());
 		fontRendererObj.drawString(statStr, centerX + 74, centerY + 16, 0x000000);
 		fontRendererObj.FONT_HEIGHT = 8;
 		statStr = "Vitality";
 		fontRendererObj.drawString(statStr, centerX + statOffsetX, centerY + 32, 0xee0000);
-		fontRendererObj.drawString(ISaiyanData.PLToString(cap.GetVitality(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 32, 0xee0000);
+		fontRendererObj.drawString(ISaiyanData.PLToString(data.GetVitality(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 32, 0xee0000);
 		statStr = "Endurance";
 		fontRendererObj.drawString(statStr, centerX + statOffsetX, centerY + 42, 0x00ee00);
-		fontRendererObj.drawString(ISaiyanData.PLToString(cap.GetEndurance(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 42, 0xee0000);
+		fontRendererObj.drawString(ISaiyanData.PLToString(data.GetEndurance(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 42, 0xee0000);
 		statStr = "Skill";
 		fontRendererObj.drawString(statStr, centerX + statOffsetX, centerY + 52, 0x0000ee);
-		fontRendererObj.drawString(ISaiyanData.PLToString(cap.GetSkill(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 52, 0xee0000);
+		fontRendererObj.drawString(ISaiyanData.PLToString(data.GetSkill(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 52, 0xee0000);
 		statStr = "Strength";
 		fontRendererObj.drawString(statStr, centerX + statOffsetX, centerY + 62, 0xee9900);
-		fontRendererObj.drawString(ISaiyanData.PLToString(cap.GetStrength(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 62, 0xee0000);
+		fontRendererObj.drawString(ISaiyanData.PLToString(data.GetStrength(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 62, 0xee0000);
 		statStr = "Agility";
 		fontRendererObj.drawString(statStr, centerX + statOffsetX, centerY + 72, 0x99ee00);
-		fontRendererObj.drawString(ISaiyanData.PLToString(cap.GetAgility(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 72, 0xee0000);
+		fontRendererObj.drawString(ISaiyanData.PLToString(data.GetAgility(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 72, 0xee0000);
 		statStr = "Spirit";
 		fontRendererObj.drawString(statStr, centerX + statOffsetX, centerY + 82, 0x0099ee);
-		fontRendererObj.drawString(ISaiyanData.PLToString(cap.GetSpirit(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 82, 0xee0000);
+		fontRendererObj.drawString(ISaiyanData.PLToString(data.GetSpirit(), isShiftKeyDown()), centerX + statOffsetX + 70, centerY + 82, 0xee0000);
+		
+		ISaiyanBattler battler = Minecraft.getMinecraft().player.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
+		List<ISaiyanMove> moves = battler.GetMoves();
+		for (int i = 0; i <moves.size(); i++){
+			ISaiyanMove move = moves.get(i);
+			String moveStr = move.GetType().toString() + " (" + move.GetCooldown() + ", " + move.GetStunTime() + ")";
+			fontRendererObj.drawString(moveStr, centerX + statOffsetX + 120, centerY + 32 + i * 10, 0xee0000);
+		}
 		
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}

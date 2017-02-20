@@ -1,9 +1,9 @@
 package com.jaynopp.saiyancraft.storage;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.jaynopp.saiyancraft.capabilities.saiyanbattler.ISaiyanBattler;
+import com.jaynopp.saiyancraft.player.moves.BaseMove;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import net.minecraft.nbt.NBTBase;
@@ -20,7 +20,21 @@ public class SaiyanBattlerStorage implements IStorage<ISaiyanBattler> {
 		nbt.setFloat("stuntime",instance.GetStunTimeLeft());
 		List<ISaiyanMove> moves = instance.GetMoves();
 		nbt.setInteger("num_moves", moves.size());
+		for (int i = 0; i < moves.size(); i++){
+			WriteMove(moves.get(i), nbt, i);
+		}
+		
 		return nbt;
+	}
+	
+	public void WriteMove(ISaiyanMove move, NBTTagCompound nbt, int index){
+		String prefix = "move" + index + "_";
+		nbt.setFloat(prefix + "cooldown", move.GetCooldown());
+		nbt.setFloat(prefix + "stuntime", move.GetStunTime());
+		nbt.setInteger(prefix + "type", move.GetType().ordinal());
+		nbt.setFloat(prefix + "power", move.GetPower());
+		nbt.setFloat(prefix + "knocback", move.GetKnockback());
+		nbt.setBoolean(prefix + "chargeable", move.IsChargeable());
 	}
 
 	@Override
@@ -29,7 +43,17 @@ public class SaiyanBattlerStorage implements IStorage<ISaiyanBattler> {
 		instance.SetCooldown(tag.getFloat("cooldown"));
 		instance.SetStunTime(tag.getFloat("stuntime"));
 		int numMoves = tag.getInteger("num_moves");
+		List<ISaiyanMove> moves = instance.GetMoves();
+		for (int i = 0; i < numMoves; i++){
+			moves.add(ReadMove(tag, i));
+		}
 		
-		
+	}
+	
+	public BaseMove ReadMove(NBTTagCompound nbt, int index){
+		String prefix = "move" + index + "_";
+		BaseMove move = new BaseMove(nbt.getFloat(prefix + "cooldown"), nbt.getFloat(prefix + "stuntime"), ISaiyanMove.Type.values()[nbt.getInteger(prefix + "type")],
+				nbt.getFloat(prefix + "power"), nbt.getFloat(prefix + "knockback"), nbt.getBoolean(prefix + "chargeable"));
+		return move;
 	}
 }

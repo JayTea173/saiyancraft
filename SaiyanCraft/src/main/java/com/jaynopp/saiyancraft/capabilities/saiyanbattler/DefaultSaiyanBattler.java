@@ -13,10 +13,14 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 	protected float cooldown;
 	protected float stunTime;
 	protected List<ISaiyanMove> moves;
-	
+	protected EntityLiving ownerEntity;
+	protected EntityPlayer owner;
 	
 	public void UpdateFrom(ISaiyanBattler other) {
 		cooldown = other.GetCooldown();
+		stunTime = other.GetStunTimeLeft();
+		moves = other.GetMoves();
+		System.out.println("Copied other Saiyanbattler, we now have " + moves.size() + " moves.");
 	}
 
 	public float GetCooldown() {
@@ -35,19 +39,30 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 		return stunTime > 0f;
 	}
 
-	public void Update() {
-		if (cooldown > 0f)
-			cooldown -= 1f / SaiyanPlayer.DT;
-		else if (cooldown < 0f)
-			cooldown = 0f;	
+	public void Update(SaiyanPlayer player) {
+		if (cooldown > -.65f){
+			cooldown -= SaiyanPlayer.DT;
+		}else if (cooldown > -100f){
+			cooldown = -1000f;	
+			if (player.comboManager != null){
+				if ((player.comboManager.currentCombo != null && !player.isChargingHeavy())){
+					player.comboManager.AbortCurrentCombo();	
+				}
+			}
+		}
+		
+
+		
 		
 		if (stunTime > 0f)
-			stunTime -= 1f / SaiyanPlayer.DT;
+			stunTime -= SaiyanPlayer.DT;
 		else if (stunTime < 0f)
 			stunTime = 0f;	
 	}
 
 	public void AddCooldown(float cooldown) {
+		if (this.cooldown < 0f)
+			this.cooldown = 0f;
 		this.cooldown += cooldown;
 	}
 
@@ -85,5 +100,20 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 			return null;
 		return (DefaultSaiyanBattler)entity.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
 	}
+
+	public EntityLiving GetOwningEntity() {
+		return ownerEntity;
+	}
+	public void SetOwner(EntityLiving owner) {
+		ownerEntity = owner;
+	}
+	public EntityPlayer GetOwningPlayer() {
+		return owner;
+	}
+	public void SetOwner(EntityPlayer owner) {
+		System.out.println("Setting owner of cap to " + owner.getName());
+		this.owner = owner;
+	}
+	
 	
 }

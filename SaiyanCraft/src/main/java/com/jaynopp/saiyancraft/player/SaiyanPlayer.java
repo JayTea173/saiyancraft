@@ -1,17 +1,20 @@
 package com.jaynopp.saiyancraft.player;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.lwjgl.input.Keyboard;
 
+import com.jaynopp.saiyancraft.SaiyanCraft;
 import com.jaynopp.saiyancraft.capabilities.saiyanbattler.DefaultSaiyanBattler;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
+import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 import com.jaynopp.saiyancraft.input.KeyBindings;
+import com.jaynopp.saiyancraft.player.moves.combos.ComboManager;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.EnumHand;
 
 public class SaiyanPlayer {
 
@@ -25,9 +28,10 @@ public class SaiyanPlayer {
 	public float attackCharge;
 	
 	private int oldAttackKeyCode; //used for disabling vanilla attack when left clicking
+	private long updates = 0;
 	
-	
-	public static List<SaiyanPlayer> players = new ArrayList<SaiyanPlayer>();
+	public static Map<String, SaiyanPlayer> players = new HashMap<String, SaiyanPlayer>();
+	public ComboManager comboManager;
 	
 	public void Block(boolean value){
 		blocking = value;
@@ -36,6 +40,11 @@ public class SaiyanPlayer {
 	public SaiyanPlayer(EntityPlayer player) {
 		this.player = player;
 		movement = new SaiyanMovement(this);
+	}
+	
+	public void SetupComboManager(){
+		System.out.println("Setting up combomanager with " + GetBattler().GetMoves().size() + " moves.");
+		comboManager = new ComboManager(player);
 	}
 	
 	public DefaultSaiyanData GetStats(){
@@ -47,17 +56,42 @@ public class SaiyanPlayer {
 	}
 
 	public static void Initialize(EntityPlayer player){
+		System.out.println("Initialized SaiyanPlayer");
 		SaiyanPlayer sp = new SaiyanPlayer(player);
 		if (player == Minecraft.getMinecraft().player)
 			local = sp;
+		System.out.println("adding splayer: " + player.getName());
+		players.put(player.getName(), sp);
+		
 			
 	}
 	
+	public static SaiyanPlayer Get(EntityPlayer player){
+		System.out.println("Looking for splayer of " + player.getName() + ", we have " + players.size());
+		String name = player.getName();
+		if (players.containsKey(name))
+			return players.get(name);
+		else
+			System.out.println("UNABLE TO FIND SPLAYER!");
+		return null;
+	}
+	
 	public void Update(){
-		
+		updates++;
+		if (updates % 120 == 0){
+			System.out.println("Sending periodic update to server.");
+			SaiyanCraft.network.sendToServer(new SyncSaiyanDataMessage(GetStats()));
+		}
 		DefaultSaiyanData data = GetStats();
+		GetBattler().Update(this);
+		if (comboManager != null)
+			if (comboManager.nextQueued && GetBattler().CanAttack()){
+				System.out.println("next from queued!");
+				comboManager.ContinueCombo(this, this.GetRayTraceTargetEntity());
+	
+			}
 		if (chargingHeavy){
-			attackCharge += .04f;
+			attackCharge += 0.85f * DT;
 			if (attackCharge > 1f)
 				attackCharge = 1f;
 		}
@@ -115,11 +149,16 @@ public class SaiyanPlayer {
 		float curr = data.GetStamina();
 		if (curr >= amount){
 			data.SetStamina(curr - amount);
-			return true;
 		} else {
 			data.SetStamina(0f);
-			return curr > 0f;
+			if (curr <= 0)
+				return false;
+				
 		}
+		float end = data.GetEndurance();
+		float bonus = (float) (amount * 0.0004d / Math.pow(data.GetMaxStamina() / 100d, 0.66d) / Math.pow(end, 0.5d));
+		data.SetEndurance(end + bonus);
+		return true;
 	}
 
 	public boolean isChargingHeavy() {
@@ -133,8 +172,8 @@ public class SaiyanPlayer {
 		
 	}
 
-	public void LightAttack() {
-		player.swingArm(EnumHand.MAIN_HAND);
+	public Entity GetRayTraceTargetEntity() {
 		
+		return Minecraft.getMinecraft().objectMouseOver.entityHit;
 	}
 }

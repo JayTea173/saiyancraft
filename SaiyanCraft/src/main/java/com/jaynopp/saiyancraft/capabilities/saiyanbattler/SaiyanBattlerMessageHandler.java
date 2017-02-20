@@ -1,9 +1,10 @@
-package com.jaynopp.saiyancraft.capabilities.saiyandata;
+package com.jaynopp.saiyancraft.capabilities.saiyanbattler;
 
 import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.world.WorldServer;
@@ -11,10 +12,10 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class SaiyanDataMessageHandler implements IMessageHandler<SyncSaiyanDataMessage, IMessage> {
+public class SaiyanBattlerMessageHandler implements IMessageHandler<SyncSaiyanBattlerMessage, IMessage> {
 
 	@Override
-	public IMessage onMessage(SyncSaiyanDataMessage message, MessageContext ctx) {
+	public IMessage onMessage(SyncSaiyanBattlerMessage message, MessageContext ctx) {
 		System.out.println("Sync SAIYANDATA!");
 		if (ctx.side.isServer()){
 			EntityPlayerMP sender = ctx.getServerHandler().playerEntity;
@@ -23,8 +24,8 @@ public class SaiyanDataMessageHandler implements IMessageHandler<SyncSaiyanDataM
 			mainThread.addScheduledTask(new Runnable(){
 				@Override
 				public void run(){
-					sender.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null).UpdateFrom(message.sd);
-					DefaultSaiyanData.UpdateStats(sender);
+					sender.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null).UpdateFrom(message.sd);
+					//DefaultSaiyanData.UpdateStats(sender);
 				}
 			});
 			
@@ -35,15 +36,18 @@ public class SaiyanDataMessageHandler implements IMessageHandler<SyncSaiyanDataM
 				@Override
 				public void run(){
 					EntityPlayerSP player = Minecraft.getMinecraft().player;
-					if (SaiyanPlayer.local == null){
-						SaiyanPlayer.Initialize(player);
-					} else if (SaiyanPlayer.local.player != player)
-						SaiyanPlayer.local.player = player;
-					
-					ISaiyanData data = player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
+					ISaiyanBattler data = player.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
 					data.UpdateFrom(message.sd);
-					System.out.println("new PL: " + message.sd.GetPowerLevel() + " -> " + data.GetPowerLevel());
-					DefaultSaiyanData.UpdateStats(player);
+					SaiyanPlayer splayer = SaiyanPlayer.Get((EntityPlayer)player);
+					if (splayer != null){
+						if (splayer.comboManager == null){
+							splayer.SetupComboManager();
+						} else {
+							System.out.println("Already have combomanager for " + player.getName());
+						}
+					} else
+						System.out.println(player.getName() + " is no SaiyanPlayer.");
+					//DefaultSaiyanData.UpdateStats(player);
 				}
 			});
 

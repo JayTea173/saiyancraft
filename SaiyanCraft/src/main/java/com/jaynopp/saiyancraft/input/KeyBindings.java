@@ -6,7 +6,6 @@ import com.jaynopp.saiyancraft.input.StatedKeyBinding.KeyEvents;
 import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 
 import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.util.EnumHand;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 
 public class KeyBindings {
@@ -20,16 +19,16 @@ public class KeyBindings {
 		block = new KeyBinding("key.block", Keyboard.KEY_LCONTROL, "key.categories.SaiyanCraft");
 		heavy_attack = new StatedKeyBinding("key.heavy_attack", -99 /*rmb*/, "key.categories.SaiyanCraft", new KeyEvents(){
 			public void OnDown(){
-				if (SaiyanPlayer.isPlayerEntityUsingFists()){
-		        	SaiyanPlayer.local.setChargingHeavy(true);
-				}
-	        	
-				
+
+				SaiyanPlayer.local.comboManager.Act(heavy_attack.binding, SaiyanPlayer.local,  SaiyanPlayer.local.GetRayTraceTargetEntity());
+				/*if (SaiyanPlayer.isPlayerEntityUsingFists()){
+	        	SaiyanPlayer.local.setChargingHeavy(true);
+			}*/
 			}
 			
 			public void OnUp(){
-				SaiyanPlayer.local.setChargingHeavy(false);
-				SaiyanPlayer.local.player.swingArm(EnumHand.MAIN_HAND);
+				if (SaiyanPlayer.local.isChargingHeavy() && SaiyanPlayer.local.comboManager.currentCombo != null)
+					SaiyanPlayer.local.comboManager.currentCombo.ReleaseChargeableMove(SaiyanPlayer.local, SaiyanPlayer.local.GetRayTraceTargetEntity());
 			}
 			
 			public void OnPressed(){
@@ -38,11 +37,12 @@ public class KeyBindings {
 		});
 		light_attack = new StatedKeyBinding("key.light_attack", -100 /*lmb*/, "key.categories.SaiyanCraft", new KeyEvents(){
 			public void OnDown(){
-				SaiyanPlayer.local.LightAttack();
+				SaiyanPlayer.local.comboManager.Act(light_attack.binding, SaiyanPlayer.local,  SaiyanPlayer.local.GetRayTraceTargetEntity());
 			}
 			
 			public void OnUp(){
-
+				if (SaiyanPlayer.local.isChargingHeavy())
+					SaiyanPlayer.local.comboManager.currentCombo.ReleaseChargeableMove(SaiyanPlayer.local, SaiyanPlayer.local.GetRayTraceTargetEntity());
 			}
 			
 			public void OnPressed(){

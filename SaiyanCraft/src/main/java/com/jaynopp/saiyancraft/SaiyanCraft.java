@@ -1,10 +1,14 @@
 package com.jaynopp.saiyancraft;
 
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.SaiyanBattlerMessageHandler;
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.SyncSaiyanBattlerMessage;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataMessageHandler;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 import com.jaynopp.saiyancraft.item.ItemValueManager;
 import com.jaynopp.saiyancraft.player.ClientPlayerFallMessage;
 import com.jaynopp.saiyancraft.player.ServerSaiyanPlayerMessageHandler;
+import com.jaynopp.saiyancraft.player.moves.UseMoveMessage;
+import com.jaynopp.saiyancraft.player.moves.UseMoveMessageHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.SoundHandler;
@@ -43,6 +47,9 @@ public class SaiyanCraft
     	network.registerMessage(SaiyanDataMessageHandler.class, SyncSaiyanDataMessage.class, 0, Side.SERVER);
     	network.registerMessage(SaiyanDataMessageHandler.class, SyncSaiyanDataMessage.class, 0, Side.CLIENT);
     	network.registerMessage(ServerSaiyanPlayerMessageHandler.class, ClientPlayerFallMessage.class, 1, Side.SERVER);
+    	network.registerMessage(SaiyanBattlerMessageHandler.class, SyncSaiyanBattlerMessage.class, 2, Side.CLIENT);
+    	network.registerMessage(UseMoveMessageHandler.class, UseMoveMessage.class, 3, Side.SERVER);
+    	network.registerMessage(UseMoveMessageHandler.class, UseMoveMessage.class, 3, Side.CLIENT);
     	soundHandler = Minecraft.getMinecraft().getSoundHandler();
     	proxy.preInit(event);
     }
