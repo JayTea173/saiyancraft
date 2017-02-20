@@ -22,18 +22,23 @@ import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class CommonProxy {
 
 	
-	public void preInit(FMLPreInitializationEvent event){	
-		SaiyanCraft.itemValueManager = new ItemValueManager();
+
+	
+	public void preInit(FMLPreInitializationEvent event){
+		SaiyanCraft.itemValueManager = new ItemValueManager();		
 		try {
 			SaiyanCraft.itemValueManager.Initialize();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		SaiyanCraft.itemValueManager.BakeValueList();
 		
 		CapabilityManager.INSTANCE.register(ISaiyanData.class, new SayanDataStorage(), DefaultSaiyanData.class);
 		CapabilityManager.INSTANCE.register(ISaiyanBattler.class, new SaiyanBattlerStorage() , DefaultSaiyanBattler.class);
@@ -51,7 +56,6 @@ public class CommonProxy {
 	
 	public void postInit(FMLPostInitializationEvent event){
 		
-		SaiyanCraft.itemValueManager.GetValue(Blocks.PLANKS);
 	}
 	
 
