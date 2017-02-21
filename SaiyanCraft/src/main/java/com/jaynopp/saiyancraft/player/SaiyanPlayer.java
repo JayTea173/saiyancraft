@@ -67,7 +67,7 @@ public class SaiyanPlayer {
 	}
 	
 	public static SaiyanPlayer Get(EntityPlayer player){
-		System.out.println("Looking for splayer of " + player.getName() + ", we have " + players.size());
+		//System.out.println("Looking for splayer of " + player.getName() + ", we have " + players.size());
 		String name = player.getName();
 		if (players.containsKey(name))
 			return players.get(name);
@@ -83,7 +83,7 @@ public class SaiyanPlayer {
 			SaiyanCraft.network.sendToServer(new SyncSaiyanDataMessage(GetStats()));
 		}
 		DefaultSaiyanData data = GetStats();
-		GetBattler().Update(this);
+		GetBattler().Update(this.player, DT);
 		if (comboManager != null)
 			if (comboManager.nextQueued && GetBattler().CanAttack()){
 				System.out.println("next from queued!");

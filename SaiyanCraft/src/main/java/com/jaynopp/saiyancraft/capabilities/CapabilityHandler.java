@@ -27,16 +27,21 @@ public class CapabilityHandler {
 	public void attachCapability(AttachCapabilitiesEvent.Entity event){
 		if (!(event.getEntity() instanceof EntityPlayer)) return;
 		EntityPlayer player = (EntityPlayer)event.getEntity();
-		if (!player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null))
+		if (!player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
 			event.addCapability(POWERLEVEL_CAP, new SaiyanDataProvider());
-		
-		if (!player.hasCapability(SaiyanBattlerProvider.BATTLER_CAP, null))
+			ISaiyanData.carriers.add(event.getEntity());
+		}
+		if (!player.hasCapability(SaiyanBattlerProvider.BATTLER_CAP, null)){
 			event.addCapability(BATTLER_CAP, new SaiyanBattlerProvider());
+			ISaiyanBattler.carriers.add(event.getEntity());
+		}
 		
 	}
 	
 	@SubscribeEvent
 	public void onPlayerLogsIn(PlayerLoggedInEvent event){
+		System.out.println("Baking ItemValues");
+		
 		EntityPlayer player = event.player;
 		if (player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
 			ISaiyanData cap = player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);

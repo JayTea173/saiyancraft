@@ -1,10 +1,14 @@
 package com.jaynopp.saiyancraft.capabilities.saiyandata;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.minecraft.entity.Entity;
 
 public interface ISaiyanData {
+	
+	public List<Entity> carriers = new ArrayList<Entity>();
 	
 	public static String PLToString(double pl, boolean decimal){
 		if (!decimal)
@@ -45,5 +49,11 @@ public interface ISaiyanData {
 			return entity.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
 		
 		return null;
+	}
+	
+	public static void Update(float dt){
+		/*for (Entity carrier : carriers){
+			if (carrier.hasCapability(SaiyanDataProvider, facing))
+		}*/
 	}
 }

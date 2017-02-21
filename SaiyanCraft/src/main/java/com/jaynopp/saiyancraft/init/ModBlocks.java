@@ -2,7 +2,6 @@ package com.jaynopp.saiyancraft.init;
 
 import com.jaynopp.core.item.JNBlockInitializer;
 import com.jaynopp.saiyancraft.SaiyanCraft;
-import com.jaynopp.saiyancraft.block.BlockTest;
 import com.jaynopp.saiyancraft.lib.Names;
 
 import net.minecraft.block.Block;
@@ -17,7 +16,7 @@ public class ModBlocks {
 	
 	public static void init(){
 		//Add all Blocks here
-		BlockTest.Initialize();
+		//BlockTest.Initialize();
 	}
 	
 	@SideOnly(Side.CLIENT)

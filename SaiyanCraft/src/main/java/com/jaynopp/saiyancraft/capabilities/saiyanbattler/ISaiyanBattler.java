@@ -1,5 +1,6 @@
 package com.jaynopp.saiyancraft.capabilities.saiyanbattler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.jaynopp.saiyancraft.player.SaiyanPlayer;
@@ -11,11 +12,13 @@ import net.minecraft.entity.player.EntityPlayer;
 
 public interface ISaiyanBattler {
 	
+	public List<Entity> carriers = new ArrayList<Entity>();
+	
 	public float GetCooldown();
 	public boolean IsOnCooldown();
 	public void AddCooldown(float cooldown);
 	public void SetCooldown(float cooldown);
-	public void Update(SaiyanPlayer player);
+	public void Update(Entity entity, float dt);
 	public float GetStunTimeLeft();
 	public boolean IsStunned();
 	public void AddStunTime(float stunTime);
@@ -34,5 +37,13 @@ public interface ISaiyanBattler {
 			return entity.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
 		
 		return null;
+	}
+	
+	public static void Update(float dt){
+		for (Entity carrier : carriers){
+			if (carrier.hasCapability(SaiyanBattlerProvider.BATTLER_CAP, null)){
+				carrier.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null).Update(carrier, dt);
+			}
+		}
 	}
 }

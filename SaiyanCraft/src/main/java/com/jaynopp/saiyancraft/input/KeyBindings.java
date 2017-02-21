@@ -41,7 +41,7 @@ public class KeyBindings {
 			}
 			
 			public void OnUp(){
-				if (SaiyanPlayer.local.isChargingHeavy())
+				if (SaiyanPlayer.local.isChargingHeavy() && SaiyanPlayer.local.comboManager.currentCombo != null)
 					SaiyanPlayer.local.comboManager.currentCombo.ReleaseChargeableMove(SaiyanPlayer.local, SaiyanPlayer.local.GetRayTraceTargetEntity());
 			}
 			

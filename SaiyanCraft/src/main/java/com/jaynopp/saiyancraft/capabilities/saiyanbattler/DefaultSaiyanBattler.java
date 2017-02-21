@@ -6,6 +6,7 @@ import java.util.List;
 import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 
@@ -39,23 +40,27 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 		return stunTime > 0f;
 	}
 
-	public void Update(SaiyanPlayer player) {
-		if (cooldown > -.65f){
-			cooldown -= SaiyanPlayer.DT;
-		}else if (cooldown > -100f){
-			cooldown = -1000f;	
-			if (player.comboManager != null){
-				if ((player.comboManager.currentCombo != null && !player.isChargingHeavy())){
-					player.comboManager.AbortCurrentCombo();	
+	public void Update(Entity entity, float dt) {
+		if (entity instanceof EntityPlayer){
+			EntityPlayer playerEntity = (EntityPlayer)entity;
+			SaiyanPlayer player = SaiyanPlayer.Get(playerEntity);
+			if (player != null){
+				if (cooldown > -.65f){
+					cooldown -= dt;
+				}else if (cooldown > -100f){
+					cooldown = -1000f;	
+					if (player.comboManager != null){
+						if ((player.comboManager.currentCombo != null && !player.isChargingHeavy())){
+							player.comboManager.AbortCurrentCombo();	
+						}
+					}
 				}
-			}
+			} else
+				System.out.print("Unable to find SaiyanPlayer: " + entity.getName());
 		}
-		
 
-		
-		
 		if (stunTime > 0f)
-			stunTime -= SaiyanPlayer.DT;
+			stunTime -= dt;
 		else if (stunTime < 0f)
 			stunTime = 0f;	
 	}

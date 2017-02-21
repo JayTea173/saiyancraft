@@ -13,7 +13,7 @@ public class SaiyanDataProvider implements ICapabilitySerializable<NBTBase> {
 	public static final Capability<ISaiyanData> POWERLEVEL_CAP = null;
 	
 	private ISaiyanData instance = POWERLEVEL_CAP.getDefaultInstance();
-			
+	
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing){
 		return capability == POWERLEVEL_CAP;
