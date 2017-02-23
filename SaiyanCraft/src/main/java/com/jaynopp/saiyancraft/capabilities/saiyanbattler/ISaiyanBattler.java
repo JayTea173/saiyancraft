@@ -3,7 +3,6 @@ package com.jaynopp.saiyancraft.capabilities.saiyanbattler;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import net.minecraft.entity.Entity;
@@ -40,7 +39,8 @@ public interface ISaiyanBattler {
 	}
 	
 	public static void Update(float dt){
-		for (Entity carrier : carriers){
+		for (int i = 0; i < carriers.size(); i++ ){
+			Entity carrier = carriers.get(i);
 			if (carrier.hasCapability(SaiyanBattlerProvider.BATTLER_CAP, null)){
 				carrier.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null).Update(carrier, dt);
 			}

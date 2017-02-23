@@ -8,6 +8,10 @@ import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class DefaultSaiyanBattler implements ISaiyanBattler {
@@ -16,6 +20,8 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 	protected List<ISaiyanMove> moves;
 	protected EntityLiving ownerEntity;
 	protected EntityPlayer owner;
+	
+	public static final AttributeModifier MODIFIER_STUN = new AttributeModifier("Stun", -100000d, 0);
 	
 	public void UpdateFrom(ISaiyanBattler other) {
 		cooldown = other.GetCooldown();
@@ -43,6 +49,10 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 	public void Update(Entity entity, float dt) {
 		if (entity instanceof EntityPlayer){
 			EntityPlayer playerEntity = (EntityPlayer)entity;
+			if (playerEntity.isDead){
+				DefaultSaiyanBattler.carriers.remove(entity);
+				return;
+			}
 			SaiyanPlayer player = SaiyanPlayer.Get(playerEntity);
 			if (player != null){
 				if (cooldown > -.65f){
@@ -56,13 +66,29 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 					}
 				}
 			} else
-				System.out.print("Unable to find SaiyanPlayer: " + entity.getName());
+				System.out.println("Unable to find SaiyanPlayer: " + entity.getName());
 		}
 
-		if (stunTime > 0f)
+		if (stunTime > 0f && dt > 0f){
 			stunTime -= dt;
-		else if (stunTime < 0f)
+		}
+		else if (stunTime < 0f){
+			if (entity instanceof EntityLivingBase)
+				DefaultSaiyanBattler.RemoveStun((EntityLivingBase)entity);
 			stunTime = 0f;	
+		}
+	}
+	
+	private static void RemoveStun(EntityLivingBase entity) {
+		IAttributeInstance speedAttrib = entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+		IAttributeInstance damageAttrib = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+
+		if (speedAttrib != null)
+			if (speedAttrib.hasModifier(MODIFIER_STUN))
+				speedAttrib.removeModifier(MODIFIER_STUN);
+		if (damageAttrib != null)
+			if (damageAttrib.hasModifier(MODIFIER_STUN))
+				damageAttrib.removeModifier(MODIFIER_STUN);
 	}
 
 	public void AddCooldown(float cooldown) {
@@ -118,6 +144,19 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 	public void SetOwner(EntityPlayer owner) {
 		System.out.println("Setting owner of cap to " + owner.getName());
 		this.owner = owner;
+	}
+
+	public static void AddStun(EntityLivingBase entity) {
+		IAttributeInstance speedAttrib = entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
+		IAttributeInstance damageAttrib = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+
+		if (speedAttrib != null)
+			if (!speedAttrib.hasModifier(MODIFIER_STUN))
+				speedAttrib.applyModifier(MODIFIER_STUN);
+		if (damageAttrib != null)
+			if (!damageAttrib.hasModifier(MODIFIER_STUN))
+				damageAttrib.applyModifier(MODIFIER_STUN);
+		
 	}
 	
 	

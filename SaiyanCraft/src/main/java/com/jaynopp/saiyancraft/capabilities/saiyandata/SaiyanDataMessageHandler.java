@@ -35,10 +35,6 @@ public class SaiyanDataMessageHandler implements IMessageHandler<SyncSaiyanDataM
 				@Override
 				public void run(){
 					EntityPlayerSP player = Minecraft.getMinecraft().player;
-					if (SaiyanPlayer.local == null){
-						SaiyanPlayer.Initialize(player);
-					} else if (SaiyanPlayer.local.player != player)
-						SaiyanPlayer.local.player = player;
 					
 					ISaiyanData data = player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
 					data.UpdateFrom(message.sd);

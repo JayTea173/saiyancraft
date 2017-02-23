@@ -75,7 +75,11 @@ public class SaiyanMovement {
 		
 		//acceleration = Math.pow(.2d, .5d/(data.GetAgility()));
 		speedLimit = 1d + data.speedBonus;
-		currSpeedLimit = player.isSneaking() ? Math.min( Math.pow(speedLimit, .2d) * .5d, 1d) : player.isSprinting() ? (speedLimit + .5d) : Math.pow(speedLimit, .2d);
+
+		boolean charging = splayer.isChargingHeavy();
+		currSpeedLimit = player.isSneaking() ? Math.min( Math.pow(speedLimit, .2d) * .5d, 1d) : (player.isSprinting() && ! charging) ? (speedLimit + .5d) : Math.pow(speedLimit, .2d);			
+		if (charging)
+			currSpeedLimit *= .333f;
 		boolean inLava = player.isInLava();
 		boolean inWater = player.isInWater();
 		if (player.onGround || inLava || inWater){
@@ -86,7 +90,7 @@ public class SaiyanMovement {
 			
 			jumping = false;
 			highestSpeedInJump = 0d;
-			if (player == Minecraft.getMinecraft().player){
+			if (player == Minecraft.getMinecraft().player && !splayer.GetBattler().IsStunned()){
 				Vec3d move = GetMoveInputVector();
 			
 				Vec3d acc = move.scale(acceleration * currSpeedLimit);

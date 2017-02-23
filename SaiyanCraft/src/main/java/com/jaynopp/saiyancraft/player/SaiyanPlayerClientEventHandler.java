@@ -22,8 +22,12 @@ public class SaiyanPlayerClientEventHandler {
     @SubscribeEvent
     public void onEntityJoinWorld(EntityJoinWorldEvent event) {
         if (event.getEntity() != null && event.getEntity() instanceof EntityPlayer) {
-        	if (event.getEntity().world.isRemote)
-        		SaiyanPlayer.Initialize((EntityPlayer)event.getEntity());
+        	if (event.getEntity().world.isRemote){
+        		if (!Minecraft.getMinecraft().player.isDead){
+	        		System.out.println("Player joined world.");
+	        		SaiyanPlayer.Initialize((EntityPlayer)event.getEntity());
+        		}
+        	}
         }
     }
 	

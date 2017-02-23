@@ -1,6 +1,7 @@
 package com.jaynopp.saiyancraft.player.moves;
 
 import com.jaynopp.saiyancraft.SaiyanCraft;
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.DefaultSaiyanBattler;
 import com.jaynopp.saiyancraft.capabilities.saiyanbattler.ISaiyanBattler;
 import com.jaynopp.saiyancraft.capabilities.saiyanbattler.SaiyanBattlerProvider;
 import com.jaynopp.saiyancraft.damagesources.SaiyanDamageSource;
@@ -10,35 +11,44 @@ import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.AttributeModifier;
-import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EnumHand;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import scala.util.Random;
 
 public class BaseMove implements ISaiyanMove {
-	protected float cooldownTime, stunTime, chargeTime, knockBack, power;
+	protected float cooldownTime, stunTime, knockBack, power, chargeTime, chargePowerModifier;
 	protected Type type;
-	protected boolean isChargeable;
+
 	
-	public static final AttributeModifier MODIFIER_STUN = new AttributeModifier("Stun", 0d, 0);
+
 	
-	public BaseMove(float cooldownTime, float stunTime, Type type, float power, float knockBack, boolean chargeable){
+	public BaseMove(float cooldownTime, float stunTime, Type type, float power, float knockBack){
 		this.cooldownTime = cooldownTime;
 		this.stunTime = stunTime;
 		this.type = type;
 		this.power = power;
 		this.knockBack = knockBack;
-		this.isChargeable = chargeable;
+		this.chargeTime = 0f;
+		this.chargePowerModifier = 0f;
+	}
+	
+	public BaseMove(float cooldownTime, float stunTime, Type type, float power, float knockBack, float chargeTime, float chargePowerModifier){
+		this.cooldownTime = cooldownTime;
+		this.stunTime = stunTime;
+		this.type = type;
+		this.power = power;
+		this.knockBack = knockBack;
+		this.chargeTime = chargeTime;
+		this.chargePowerModifier = chargePowerModifier;
 	}
 	
 	
 	public static void UseClient(BaseMove move, SaiyanPlayer user, Entity entityHit){
 		ISaiyanBattler battler = user.GetBattler();
 		battler.AddCooldown(move.cooldownTime);
-		System.out.println("Adding cooldown +" + move.cooldownTime + " cooldown is now " + battler.GetCooldown());
+		//System.out.println("Adding cooldown +" + move.cooldownTime + " cooldown is now " + battler.GetCooldown());
 		user.player.swingArm(EnumHand.MAIN_HAND);
 		if (entityHit != null) {
 			Random rand = new Random();
@@ -52,17 +62,26 @@ public class BaseMove implements ISaiyanMove {
 		
 	}
 	
-	public void KnockBack(SaiyanPlayer user, Entity entityHit){
+	public void KnockBack(SaiyanPlayer user, Entity entityHit, float statBonus){
 		EntityPlayer player = user.player;
-		Vec3d dir = new Vec3d(player.posX, player.posY, player.posZ).subtract(new Vec3d(entityHit.posX, entityHit.posY, entityHit.posZ)).normalize();
-		Vec3d knock = dir.scale(knockBack);
-		entityHit.addVelocity(knock.xCoord, knock.yCoord, knock.zCoord);
+		float pi180 = 180.0F * (float)Math.PI;
+		/*float faceX = -MathHelper.sin(player.cameraYaw / pi180) * MathHelper.cos(player.rotationPitch * pi180);
+		float faceY = -MathHelper.sin(player.cameraPitch * pi180);
+		float faceZ = MathHelper.cos(player.cameraYaw * pi180) * MathHelper.cos(player.cameraPitch * pi180);
+		System.out.println("knock dir: " + faceX + ", " + faceY + ", " + faceZ);
+		
+		Vec3d dir = new Vec3d(faceX, faceY, faceZ).normalize();*/
+		Vec3d dir = new Vec3d(entityHit.posX, entityHit.posY, entityHit.posZ).subtract(new Vec3d(player.posX, player.posY, player.posZ)).normalize();
+		System.out.println("KB: " + (knockBack * statBonus));
+		Vec3d knock = dir.scale(knockBack * (statBonus));
+		entityHit.motionX += knock.xCoord;
+		entityHit.motionY += knock.yCoord;
+		entityHit.motionZ += knock.zCoord;
 		entityHit.velocityChanged = true;
 	}
 	
 	public static void UseServer(BaseMove move, SaiyanPlayer user, Entity entityHit){
 		user.player.swingArm(EnumHand.MAIN_HAND);
-		
 		ISaiyanBattler target = null;
 		if (entityHit != null)
 			target = entityHit.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
@@ -73,29 +92,20 @@ public class BaseMove implements ISaiyanMove {
 		//DAMAGE
 		if (entityHit != null) {
 			float curr = user.GetStats().GetStrength();
-			float damage = 1f + (float)Math.pow(curr-1d, 0.925d);
-			float bonus = (float) (1d / Math.pow(curr, .25d) * .0025d) * move.GetPower();
-			System.out.println("Player is attacking! Strength increased by " + bonus + ", damage dealt: " + (damage / 2f) + " hearts.");
+			float chargeMul = 1f + ((move.IsChargeable()) ? (user.attackCharge * move.chargePowerModifier) : 1f);
+			float damage = (1f + (float)Math.pow(curr-1d, 0.925d)) * move.GetPower() * chargeMul * .5f;
+			float bonus = (float) (1d / Math.pow(curr, .25d) * .0025d) * move.GetPower() * chargeMul;
+			System.out.println("Player is attacking! Strength increased by " + bonus + ", damage dealt: " + (damage / 2f) + " hearts. (power: " + move.power + ")");
 			Random rand = new Random();
 			entityHit.playSound(ModSounds.PUNCH_LIGHT, 1f, .9f + rand.nextFloat() * .2f);
 			user.GetStats().SetStrength(curr + bonus);
 			entityHit.attackEntityFrom(new SaiyanDamageSource("saiyandamage.entity", user.player, null), damage);
 			if (entityHit instanceof EntityLivingBase){
 				EntityLivingBase livingEntity = ((EntityLivingBase)entityHit);
-				move.KnockBack(user, entityHit);
-				//livingEntity.knockBack(user.player, move.knockBack, 1d, 1d);
-				IAttributeInstance speedAttrib = livingEntity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
-				IAttributeInstance damageAttrib = livingEntity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
-
-				System.out.println("Applying stun modifiers...");
-				if (speedAttrib != null)
-					if (!speedAttrib.hasModifier(MODIFIER_STUN))
-						speedAttrib.applyModifier(MODIFIER_STUN);
-				if (damageAttrib != null)
-					if (!damageAttrib.hasModifier(MODIFIER_STUN))
-						damageAttrib.applyModifier(MODIFIER_STUN);
 				
+				DefaultSaiyanBattler.AddStun(livingEntity);
 				
+				move.KnockBack(user, entityHit, (float) Math.pow(damage, .3f));
 				
 			}
 			entityHit.hurtResistantTime = 0;
@@ -104,21 +114,11 @@ public class BaseMove implements ISaiyanMove {
 
 	}
 	
-	private static void RemoveStun(Entity entityHit, ISaiyanBattler entityBattler, float stunTime, IAttributeInstance speedAttrib, IAttributeInstance damageAttrib){
-		if (entityBattler.GetStunTimeLeft() <= 0f){
-			if (speedAttrib != null)
-				speedAttrib.removeModifier(MODIFIER_STUN);
-			if (damageAttrib != null)
-				damageAttrib.removeModifier(MODIFIER_STUN);
-			System.out.println("STUN REMOVED!");
-		}
-	}
-	
 	public static void UseCommon(BaseMove move, SaiyanPlayer user, Entity entityHit){
-		if (entityHit != null)
-			System.out.println("we hit " + entityHit.getName());
-		else
-			System.out.println("we hit nothing.");	
+		//if (entityHit != null)
+		//	System.out.println("we hit " + entityHit.getName());
+		//else
+		//	System.out.println("we hit nothing.");	
 		
 	}
 	
@@ -166,7 +166,7 @@ public class BaseMove implements ISaiyanMove {
 	}
 	
 	public boolean IsChargeable(){
-		return isChargeable;
+		return GetChargeTime() > 0f;
 	}
 	
 	public float GetChargeTime() {
@@ -183,7 +183,7 @@ public class BaseMove implements ISaiyanMove {
 	}
 	
 	public static BaseMove ReadFromBytes(ByteBuf buf){
-		BaseMove move = new BaseMove(buf.readFloat(), buf.readFloat(), ISaiyanMove.Type.values()[buf.readInt()], buf.readFloat(), buf.readFloat(), buf.readBoolean());
+		BaseMove move = new BaseMove(buf.readFloat(), buf.readFloat(), ISaiyanMove.Type.values()[buf.readInt()], buf.readFloat(), buf.readFloat(), buf.readFloat(), buf.readFloat());
 		return move;
 	}
 	
@@ -193,7 +193,12 @@ public class BaseMove implements ISaiyanMove {
 		buf.writeInt(move.GetType().ordinal());
 		buf.writeFloat(move.GetPower());
 		buf.writeFloat(move.GetKnockback());
-		buf.writeBoolean(move.IsChargeable());
+		buf.writeFloat(move.GetChargeTime());
+		buf.writeFloat(move.GetChargePowerModifier());
+	}
+
+	public float GetChargePowerModifier() {
+		return chargePowerModifier;
 	}
 
 

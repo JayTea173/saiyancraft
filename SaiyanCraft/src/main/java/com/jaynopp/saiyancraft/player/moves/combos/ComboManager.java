@@ -19,6 +19,7 @@ public class ComboManager {
 	public Map<KeyBinding, Combo> combos;
 	public Combo currentCombo;
 	public boolean nextQueued;
+	public KeyBinding queuedKey;
 	
 	public ComboManager(EntityLiving entity){
 		moves = DefaultSaiyanBattler.Get(entity).GetMoves();
@@ -69,20 +70,17 @@ public class ComboManager {
 		if (currentCombo.moves.get(currentCombo.current).move.IsChargeable()){
 			System.out.println("The move you're using is chargeable");
 		}
-		currentCombo.Start(user, entityHit);
+		currentCombo.Start(input, user, entityHit);
 		System.out.println("Start combo (" + currentCombo.moves.size() + ")");
 	}
 	
-	public void ContinueCombo(SaiyanPlayer user, Entity entityHit){
+	public void ContinueCombo(KeyBinding input, SaiyanPlayer user, Entity entityHit){
 			if (currentCombo == null)
 				return;
 			if (user.GetBattler().CanAttack())
 				currentCombo.GetNext();
-			if (currentCombo.moves.get(currentCombo.current).move.IsChargeable()){
-				System.out.println("The move you're using is chargeable");
-			}
-			currentCombo.ExecuteMove(user, entityHit);
-			if (!currentCombo.HasNext())
+			currentCombo.ExecuteMove(input, user, entityHit);
+			if (!currentCombo.HasNext() && !currentCombo.moves.get(currentCombo.current).move.IsChargeable())
 				AbortCurrentCombo();
 			
 	}
@@ -90,15 +88,18 @@ public class ComboManager {
 	public void AbortCurrentCombo(){
 		currentCombo.Reset();
 		currentCombo = null;
+		System.out.println("ABORT COMBO!!");
 	}
 	
 	public void Act(KeyBinding input, SaiyanPlayer user, Entity entityHit){
+		if (user.isChargingHeavy())
+			return; //abort input if charging attack
 		if (currentCombo == null){
 			if (user.GetBattler().CanAttack())
 				StartCombo(input, user, entityHit);
 		} else if (currentCombo.HasNext()) {
 			if (currentCombo.PeekNext().input == input)
-				ContinueCombo(user, entityHit);
+				ContinueCombo(input, user, entityHit);
 		} else {
 			System.out.println("Combo finished!");
 			AbortCurrentCombo();

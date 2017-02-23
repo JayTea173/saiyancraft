@@ -71,23 +71,28 @@ public class Combo {
 		}
 	}
 	
-	public void ExecuteMove(SaiyanPlayer user, Entity entityHit){
+	public void ExecuteMove(KeyBinding input, SaiyanPlayer user, Entity entityHit){
 		if (user.GetBattler().CanAttack()){
 			ComboItem ci = moves.get(current);
 			if (ci.move.IsChargeable()){
-				user.setChargingHeavy(true);
+				if (input.isKeyDown())
+					user.setChargingHeavy(true);
+				else
+					ci.move.Use(user, entityHit);
 			} else {
 				ci.move.Use(user, entityHit);
 			}
 			user.comboManager.nextQueued = false;
+			user.comboManager.queuedKey = null;
 		} else {
 			user.comboManager.nextQueued = true;
+			user.comboManager.queuedKey = input;
 		}
 	}
 	
-	public void Start(SaiyanPlayer user, Entity entityHit) {
+	public void Start(KeyBinding input, SaiyanPlayer user, Entity entityHit) {
 		current = 0;
-		ExecuteMove(user, entityHit);
+		ExecuteMove(input, user, entityHit);
 	}
 
 }

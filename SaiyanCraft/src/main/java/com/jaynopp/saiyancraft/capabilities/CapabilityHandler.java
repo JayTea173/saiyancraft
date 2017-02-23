@@ -10,6 +10,7 @@ import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataProvider;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 import com.jaynopp.saiyancraft.init.ModMoves;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.ResourceLocation;
@@ -25,13 +26,14 @@ public class CapabilityHandler {
 	@SuppressWarnings("deprecation")
 	@SubscribeEvent
 	public void attachCapability(AttachCapabilitiesEvent.Entity event){
-		if (!(event.getEntity() instanceof EntityPlayer)) return;
-		EntityPlayer player = (EntityPlayer)event.getEntity();
-		if (!player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
-			event.addCapability(POWERLEVEL_CAP, new SaiyanDataProvider());
-			ISaiyanData.carriers.add(event.getEntity());
+		Entity entity = event.getEntity();
+		if ((event.getEntity() instanceof EntityPlayer)){
+			if (!entity.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
+				event.addCapability(POWERLEVEL_CAP, new SaiyanDataProvider());
+				ISaiyanData.carriers.add(event.getEntity());
+			}
 		}
-		if (!player.hasCapability(SaiyanBattlerProvider.BATTLER_CAP, null)){
+		if (!entity.hasCapability(SaiyanBattlerProvider.BATTLER_CAP, null)){
 			event.addCapability(BATTLER_CAP, new SaiyanBattlerProvider());
 			ISaiyanBattler.carriers.add(event.getEntity());
 		}
@@ -40,7 +42,6 @@ public class CapabilityHandler {
 	
 	@SubscribeEvent
 	public void onPlayerLogsIn(PlayerLoggedInEvent event){
-		System.out.println("Baking ItemValues");
 		
 		EntityPlayer player = event.player;
 		if (player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
@@ -68,13 +69,15 @@ public class CapabilityHandler {
 	@SubscribeEvent
 	public void onEntityJoinWorld(EntityJoinWorldEvent event){
 		if (!event.getWorld().isRemote){
-			if (!(event.getEntity() instanceof EntityPlayer)) return;
-			EntityPlayer player = (EntityPlayer) event.getEntity();
-			if (player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
-				ISaiyanData cap = player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
-				DefaultSaiyanData.UpdateStats(player);
-				//System.out.println("SaiyanData on Server (WorldJoin): " + cap.GetPowerLevel());
-				SaiyanCraft.network.sendTo(new SyncSaiyanDataMessage(cap), (EntityPlayerMP) player);
+			Entity entity = event.getEntity();
+			if (entity instanceof EntityPlayer){
+				EntityPlayer player = (EntityPlayer) entity;
+				if (player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
+					ISaiyanData cap = player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
+					DefaultSaiyanData.UpdateStats(player);
+					//System.out.println("SaiyanData on Server (WorldJoin): " + cap.GetPowerLevel());
+					SaiyanCraft.network.sendTo(new SyncSaiyanDataMessage(cap), (EntityPlayerMP) player);
+				}
 			}
 		}
 	}

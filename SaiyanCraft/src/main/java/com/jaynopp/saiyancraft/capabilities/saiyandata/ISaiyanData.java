@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.DefaultSaiyanBattler;
+
 import net.minecraft.entity.Entity;
 
 public interface ISaiyanData {
@@ -52,8 +54,15 @@ public interface ISaiyanData {
 	}
 	
 	public static void Update(float dt){
+		for (int i = 0; i < carriers.size(); i++ ){
+			Entity carrier = carriers.get(i);
+			
+			if (carrier.isDead)
+				DefaultSaiyanBattler.carriers.remove(carrier);
+			
 		/*for (Entity carrier : carriers){
 			if (carrier.hasCapability(SaiyanDataProvider, facing))
 		}*/
+		}
 	}
 }

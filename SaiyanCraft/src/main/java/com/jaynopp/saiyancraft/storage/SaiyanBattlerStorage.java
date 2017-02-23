@@ -34,7 +34,8 @@ public class SaiyanBattlerStorage implements IStorage<ISaiyanBattler> {
 		nbt.setInteger(prefix + "type", move.GetType().ordinal());
 		nbt.setFloat(prefix + "power", move.GetPower());
 		nbt.setFloat(prefix + "knocback", move.GetKnockback());
-		nbt.setBoolean(prefix + "chargeable", move.IsChargeable());
+		nbt.setFloat(prefix + "chargetime", move.GetChargeTime());
+		nbt.setFloat(prefix + "chargepowermodifier", move.GetChargePowerModifier());
 	}
 
 	@Override
@@ -52,8 +53,8 @@ public class SaiyanBattlerStorage implements IStorage<ISaiyanBattler> {
 	
 	public BaseMove ReadMove(NBTTagCompound nbt, int index){
 		String prefix = "move" + index + "_";
-		BaseMove move = new BaseMove(nbt.getFloat(prefix + "cooldown"), nbt.getFloat(prefix + "stuntime"), ISaiyanMove.Type.values()[nbt.getInteger(prefix + "type")],
-				nbt.getFloat(prefix + "power"), nbt.getFloat(prefix + "knockback"), nbt.getBoolean(prefix + "chargeable"));
-		return move;
+		return new BaseMove(nbt.getFloat(prefix + "cooldown"), nbt.getFloat(prefix + "stuntime"), ISaiyanMove.Type.values()[nbt.getInteger(prefix + "type")],
+				nbt.getFloat(prefix + "power"), nbt.getFloat(prefix + "knockback"), nbt.getFloat(prefix + "chargetime"), nbt.getFloat(prefix + "chargepowermodifier"));
+
 	}
 }

@@ -87,11 +87,11 @@ public class SaiyanPlayer {
 		if (comboManager != null)
 			if (comboManager.nextQueued && GetBattler().CanAttack()){
 				System.out.println("next from queued!");
-				comboManager.ContinueCombo(this, this.GetRayTraceTargetEntity());
+				comboManager.ContinueCombo(comboManager.queuedKey, this, this.GetRayTraceTargetEntity());
 	
 			}
 		if (chargingHeavy){
-			attackCharge += 0.85f * DT;
+			attackCharge += 1f / comboManager.currentCombo.moves.get(comboManager.currentCombo.GetCurrent()).move.GetChargeTime() * DT;
 			if (attackCharge > 1f)
 				attackCharge = 1f;
 		}

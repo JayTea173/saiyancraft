@@ -1,0 +1,10 @@
+{
+	"player.attack.punch.light":
+	{
+		"category": "neutral",
+		"sounds":
+		[
+			{"name": "saiyancraft:player/attack/punch_light", "stream":false}
+		]
+	}
+}

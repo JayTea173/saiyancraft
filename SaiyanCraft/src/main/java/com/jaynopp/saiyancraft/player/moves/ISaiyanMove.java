@@ -18,6 +18,7 @@ public interface ISaiyanMove {
 	public float GetStunTime();
 	public Type GetType();
 	public boolean IsChargeable();
+	public float GetChargePowerModifier();
 	public float GetChargeTime();
 	public float GetPower();
 	public float GetKnockback();

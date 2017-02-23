@@ -39,8 +39,8 @@ public class SaiyanCraftServerEventHandler {
 			tps = ticks - lastTicks;
 			lastTime = System.currentTimeMillis();
 			lastTicks = ticks;
-			System.out.println("Server tps: " + tps + ((tps < 40) ? " -" + (40-tps) : "") + ((tps > 40) ? " +" + (tps-40) : ""));
-			System.out.println(ISaiyanData.carriers.size() + " SaiyanData, " + ISaiyanBattler.carriers.size() + " SaiyanBattlers");
+			//System.out.println("Server tps: " + tps + ((tps < 40) ? " -" + (40-tps) : "") + ((tps > 40) ? " +" + (tps-40) : ""));
+			//System.out.println(ISaiyanData.carriers.size() + " SaiyanData, " + ISaiyanBattler.carriers.size() + " SaiyanBattlers");
 		}
 		ISaiyanData.Update(dt);
 		ISaiyanBattler.Update(dt);
