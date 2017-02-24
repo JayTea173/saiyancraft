@@ -16,11 +16,6 @@ public class KeyInputHandler {
         	Minecraft.getMinecraft().displayGuiScreen(new SaiyanPlayerStatusGui());
         	System.out.println("You have " + DefaultSaiyanBattler.Get(Minecraft.getMinecraft().player).GetMoves().size() + " moves");
         }
-        if (KeyBindings.block.isPressed()){
-        	SaiyanPlayer.local.Block(true);
-        }
-        if (!KeyBindings.block.isKeyDown() && SaiyanPlayer.local.isBlocking())
-        	SaiyanPlayer.local.Block(false);
         
 
         

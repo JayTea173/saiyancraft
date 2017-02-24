@@ -26,6 +26,8 @@ public class SaiyanPlayer {
 	private boolean blocking;
 	private boolean chargingHeavy;
 	public float attackCharge;
+	public float timeBlocked = 0f;
+	public long timeUsedStamina = 0;
 	
 	private int oldAttackKeyCode; //used for disabling vanilla attack when left clicking
 	private long updates = 0;
@@ -35,6 +37,8 @@ public class SaiyanPlayer {
 	
 	public void Block(boolean value){
 		blocking = value;
+		if (!value)
+			timeBlocked = 0f;
 	}
 	
 	public SaiyanPlayer(EntityPlayer player) {
@@ -56,14 +60,29 @@ public class SaiyanPlayer {
 	}
 
 	public static void Initialize(EntityPlayer player){
-		System.out.println("Initialized SaiyanPlayer");
+		
 		SaiyanPlayer sp = new SaiyanPlayer(player);
 		if (player == Minecraft.getMinecraft().player)
 			local = sp;
+		
 		System.out.println("adding splayer: " + player.getName());
 		players.put(player.getName(), sp);
+				
+	}
+	
+	public static void Initialize(EntityPlayer player, SaiyanPlayer old){
 		
-			
+		SaiyanPlayer sp = new SaiyanPlayer(player);
+		if (player == Minecraft.getMinecraft().player)
+			local = sp;
+
+		System.out.println("updating splayer: " + player.getName());
+		players.remove(player.getName(), old);
+		players.put(player.getName(), sp);
+		if (old != null)
+			if (old.comboManager != null)
+				sp.comboManager = old.comboManager;
+				
 	}
 	
 	public static SaiyanPlayer Get(EntityPlayer player){
@@ -71,12 +90,18 @@ public class SaiyanPlayer {
 		String name = player.getName();
 		if (players.containsKey(name))
 			return players.get(name);
-		else
-			System.out.println("UNABLE TO FIND SPLAYER!");
+
+		System.out.println("UNABLE TO FIND SPLAYER!");
 		return null;
 	}
 	
 	public void Update(){
+		if (player.isSwingInProgress){
+			//if (player.swingProgress > 1f)
+			//	player.swingProgress = 0f;
+			//System.out.println("Swing: " + player.swingProgress + " pre: " + player.prevSwingProgress);
+		}
+		
 		updates++;
 		if (updates % 120 == 0){
 			System.out.println("Sending periodic update to server.");
@@ -111,7 +136,8 @@ public class SaiyanPlayer {
 			}
 				
 		}
-		
+		if (this.blocking)
+			this.timeBlocked += DT;
 		movement.Update(data);
 		
 	}
@@ -149,6 +175,7 @@ public class SaiyanPlayer {
 		float curr = data.GetStamina();
 		if (curr >= amount){
 			data.SetStamina(curr - amount);
+			timeUsedStamina = System.currentTimeMillis();
 		} else {
 			data.SetStamina(0f);
 			if (curr <= 0)

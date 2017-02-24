@@ -67,8 +67,8 @@ public class SaiyanMovement {
 	}
 
 	public void Update(DefaultSaiyanData data) {
-		if (!player.isSprinting() && !jumping){
-			data.SetStamina(data.GetStamina() + 0.05f);
+		if (System.currentTimeMillis() - splayer.timeUsedStamina > 500){
+			data.SetStamina(data.GetStamina() + 0.05f + (0.0005f * data.GetMaxStamina()));
 			if (data.GetStamina() > data.GetMaxStamina())
 				data.SetStamina(data.GetMaxStamina());
 		}
@@ -84,7 +84,7 @@ public class SaiyanMovement {
 		boolean inWater = player.isInWater();
 		if (player.onGround || inLava || inWater){
 			if (player.isSprinting())
-				if (!splayer.UseStamina(0.025f))
+				if (!splayer.UseStamina(0.05f))
 					player.setSprinting(false);
 			
 			

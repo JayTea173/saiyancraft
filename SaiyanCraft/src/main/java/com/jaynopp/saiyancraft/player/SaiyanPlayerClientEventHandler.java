@@ -25,7 +25,8 @@ public class SaiyanPlayerClientEventHandler {
         	if (event.getEntity().world.isRemote){
         		if (!Minecraft.getMinecraft().player.isDead){
 	        		System.out.println("Player joined world.");
-	        		SaiyanPlayer.Initialize((EntityPlayer)event.getEntity());
+	        		
+	        		SaiyanPlayer.Initialize((EntityPlayer)event.getEntity(), SaiyanPlayer.local);
         		}
         	}
         }
@@ -43,7 +44,7 @@ public class SaiyanPlayerClientEventHandler {
 	@SubscribeEvent
 	public void onPlayerJump (LivingJumpEvent event){ //only on client
 		if (event.getEntity() == Minecraft.getMinecraft().player){
-			if (SaiyanPlayer.local.UseStamina(2f))
+			if (SaiyanPlayer.local.UseStamina(4f))
 				SaiyanPlayer.local.OnJump();
 			
 

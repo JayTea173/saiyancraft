@@ -72,7 +72,7 @@ public class BaseMove implements ISaiyanMove {
 		
 		Vec3d dir = new Vec3d(faceX, faceY, faceZ).normalize();*/
 		Vec3d dir = new Vec3d(entityHit.posX, entityHit.posY, entityHit.posZ).subtract(new Vec3d(player.posX, player.posY, player.posZ)).normalize();
-		System.out.println("KB: " + (knockBack * statBonus));
+		System.out.println("KB: " + (knockBack) + " (statbonus: " + statBonus + ")");
 		Vec3d knock = dir.scale(knockBack * (statBonus));
 		entityHit.motionX += knock.xCoord;
 		entityHit.motionY += knock.yCoord;
@@ -105,7 +105,10 @@ public class BaseMove implements ISaiyanMove {
 				
 				DefaultSaiyanBattler.AddStun(livingEntity);
 				
-				move.KnockBack(user, entityHit, (float) Math.pow(damage, .3f));
+				if (move.IsChargeable())
+					move.KnockBack(user, entityHit, (.25f + (chargeMul / move.chargePowerModifier) * .75f) * (float) Math.pow(damage, .3f));
+				else
+					move.KnockBack(user, entityHit, (float) Math.pow(damage, .3f));
 				
 			}
 			entityHit.hurtResistantTime = 0;
@@ -195,6 +198,7 @@ public class BaseMove implements ISaiyanMove {
 		buf.writeFloat(move.GetKnockback());
 		buf.writeFloat(move.GetChargeTime());
 		buf.writeFloat(move.GetChargePowerModifier());
+		System.out.println("Writing move kb: " + move.GetKnockback());
 	}
 
 	public float GetChargePowerModifier() {

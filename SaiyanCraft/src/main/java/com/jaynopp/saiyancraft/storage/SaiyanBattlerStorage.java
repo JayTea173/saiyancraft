@@ -33,7 +33,7 @@ public class SaiyanBattlerStorage implements IStorage<ISaiyanBattler> {
 		nbt.setFloat(prefix + "stuntime", move.GetStunTime());
 		nbt.setInteger(prefix + "type", move.GetType().ordinal());
 		nbt.setFloat(prefix + "power", move.GetPower());
-		nbt.setFloat(prefix + "knocback", move.GetKnockback());
+		nbt.setFloat(prefix + "knockback", move.GetKnockback());
 		nbt.setFloat(prefix + "chargetime", move.GetChargeTime());
 		nbt.setFloat(prefix + "chargepowermodifier", move.GetChargePowerModifier());
 	}

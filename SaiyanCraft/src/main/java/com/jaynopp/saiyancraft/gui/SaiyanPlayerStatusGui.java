@@ -83,7 +83,7 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 		List<ISaiyanMove> moves = battler.GetMoves();
 		for (int i = 0; i <moves.size(); i++){
 			ISaiyanMove move = moves.get(i);
-			String moveStr = move.GetType().toString() + " (" + move.GetCooldown() + ", " + move.GetStunTime() + ")";
+			String moveStr = move.GetType().toString() + " (" + move.GetCooldown() + ", " + move.GetStunTime() + ", " + move.GetKnockback() + ")";
 			fontRendererObj.drawString(moveStr, centerX + statOffsetX + 120, centerY + 32 + i * 10, 0xee0000);
 		}
 		

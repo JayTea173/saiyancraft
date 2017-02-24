@@ -56,11 +56,25 @@ public class SaiyanPlayerCommonEventHandler {
 		if (event.getEntity() instanceof EntityPlayer){
 			EntityPlayer player = (EntityPlayer)event.getEntity();
 			DefaultSaiyanData data = DefaultSaiyanData.Get(player);
-			float curr = data.GetVitality();
-			float bonus = (float) (Math.pow(event.getAmount() / curr, 1.4d) * .0025d);
-			System.out.println("Player was hurt! Vitality increased by " + bonus);
-			data.SetVitality(curr + bonus);
-			DefaultSaiyanData.UpdateStats(player);
+			SaiyanPlayer splayer = SaiyanPlayer.Get(player);
+			if (splayer.isBlocking()){
+				if (splayer.timeBlocked < 0.2f){
+					System.out.println("PERFECT BLOCK!");
+				} else {
+					System.out.println("Attack blocked!");
+				}
+				event.setCanceled(true);
+				
+			} else {
+				float curr = data.GetVitality();
+				float bonus = 1f;
+				if (!(Float.isInfinite(bonus) && curr == 0f))
+					bonus = (float) (Math.pow(event.getAmount() / curr, 1.4d) * .0025d);
+	
+				System.out.println("Player was attacked! Vitality Stat increased by " + bonus);
+				data.SetVitality(curr + bonus);
+				DefaultSaiyanData.UpdateStats(player);
+			}
 		}
 	}
 	
@@ -86,7 +100,9 @@ public class SaiyanPlayerCommonEventHandler {
 		if (event.getEntity() instanceof EntityPlayer){
 			DefaultSaiyanData data = DefaultSaiyanData.Get((EntityPlayer)event.getEntity());
 			float curr = data.GetVitality();
-			float bonus = (float) (Math.pow(event.getAmount() / curr, 1.4d) * .0025d);
+			float bonus = 1f;
+			if (!(Float.isInfinite(bonus) && curr == 0f))
+				bonus = (float) (Math.pow(event.getAmount() / curr, 1.4d) * .0025d);
 			System.out.println("Player was hurt! Vitality increased by " + bonus);
 			data.SetVitality(curr + bonus);
 		}
