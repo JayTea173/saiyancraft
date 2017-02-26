@@ -58,12 +58,7 @@ public class SaiyanPlayerCommonEventHandler {
 			DefaultSaiyanData data = DefaultSaiyanData.Get(player);
 			SaiyanPlayer splayer = SaiyanPlayer.Get(player);
 			if (splayer.isBlocking()){
-				if (splayer.timeBlocked < 0.2f){
-					System.out.println("PERFECT BLOCK!");
-				} else {
-					System.out.println("Attack blocked!");
-				}
-				event.setCanceled(true);
+				splayer.HandleBlockingEvent(event);
 				
 			} else {
 				float curr = data.GetVitality();

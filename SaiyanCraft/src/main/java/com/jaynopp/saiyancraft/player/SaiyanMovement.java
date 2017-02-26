@@ -25,6 +25,7 @@ public class SaiyanMovement {
 	public boolean canJump = false;
 	public boolean jumping = true;
 	public boolean falling = false;
+	private float knockedAirborneTime = 0f;
 	private double currSpeedLimit;
 	private double highestSpeedInJump = 0d;
 	
@@ -65,13 +66,28 @@ public class SaiyanMovement {
 		triedToMoveLastFrame = strafe != 0d || forward != 0d;
 		return new Vec3d(-strafe, 0, forward).normalize();
 	}
+	
+	public void AddVelocity(Vec3d vec){
+		velocity = velocity.add(vec);
+	}
+	
+	public void KnockAirborne(float time){
+		knockedAirborneTime = time;
+	}
 
 	public void Update(DefaultSaiyanData data) {
-		if (System.currentTimeMillis() - splayer.timeUsedStamina > 500){
-			data.SetStamina(data.GetStamina() + 0.05f + (0.0005f * data.GetMaxStamina()));
+		long currMillis = System.currentTimeMillis();
+		if (currMillis - splayer.timeUsedStamina > 500){
+			float regen =  0.05f + (0.0005f * data.GetMaxStamina());
+			if (splayer.isBlocking())
+				regen *= .5f;
+			data.SetStamina(data.GetStamina() + regen);
 			if (data.GetStamina() > data.GetMaxStamina())
 				data.SetStamina(data.GetMaxStamina());
 		}
+		if (knockedAirborneTime > 0f)
+			knockedAirborneTime -= SaiyanPlayer.DT;
+		
 		
 		//acceleration = Math.pow(.2d, .5d/(data.GetAgility()));
 		speedLimit = 1d + data.speedBonus;
@@ -80,6 +96,8 @@ public class SaiyanMovement {
 		currSpeedLimit = player.isSneaking() ? Math.min( Math.pow(speedLimit, .2d) * .5d, 1d) : (player.isSprinting() && ! charging) ? (speedLimit + .5d) : Math.pow(speedLimit, .2d);			
 		if (charging)
 			currSpeedLimit *= .333f;
+		if (splayer.isBlocking())
+			currSpeedLimit *= .1f;
 		boolean inLava = player.isInLava();
 		boolean inWater = player.isInWater();
 		if (player.onGround || inLava || inWater){
@@ -121,14 +139,15 @@ public class SaiyanMovement {
 				GroundedChange(false);
 		}
 		
-
-		double l = velocity.lengthVector();
-		if ((!triedToMoveLastFrame && player.onGround))
-			velocity = velocity.scale(1d / friction);
-		else if (l > currSpeedLimit){
-			if(previouslyGrounded && this.GetTicksSinceGroundChange() > 0)
-				if (inWater || inLava || player.onGround)
-					velocity = velocity.scale(1d / friction);
+		if (knockedAirborneTime <= 0f){
+			double l = velocity.lengthVector();
+			if ((!triedToMoveLastFrame && player.onGround))
+				velocity = velocity.scale(1d / friction);
+			else if (l > currSpeedLimit){
+				if(previouslyGrounded && this.GetTicksSinceGroundChange() > 0)
+					if (inWater || inLava || player.onGround)
+						velocity = velocity.scale(1d / friction);
+			}
 		}
 		
 

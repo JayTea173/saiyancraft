@@ -62,22 +62,35 @@ public class BaseMove implements ISaiyanMove {
 		
 	}
 	
+	public static void KnockBackEntity(Entity attacker, Entity entityHit, float amount, boolean applyY){
+		Vec3d dir = new Vec3d(entityHit.posX, entityHit.posY, entityHit.posZ).subtract(new Vec3d(attacker.posX, attacker.posY, attacker.posZ)).normalize();
+		Vec3d knock = dir.scale(amount);
+		entityHit.motionX += knock.xCoord;
+		if (applyY)
+			entityHit.motionY += knock.yCoord;
+		entityHit.motionZ += knock.zCoord;
+		entityHit.velocityChanged = true;
+	}
+	
 	public void KnockBack(SaiyanPlayer user, Entity entityHit, float statBonus){
-		EntityPlayer player = user.player;
-		float pi180 = 180.0F * (float)Math.PI;
+		KnockBackEntity(user.player, entityHit, knockBack * statBonus, true);
+		//EntityPlayer player = user.player;
+		//float pi180 = 180.0F * (float)Math.PI;
 		/*float faceX = -MathHelper.sin(player.cameraYaw / pi180) * MathHelper.cos(player.rotationPitch * pi180);
 		float faceY = -MathHelper.sin(player.cameraPitch * pi180);
 		float faceZ = MathHelper.cos(player.cameraYaw * pi180) * MathHelper.cos(player.cameraPitch * pi180);
 		System.out.println("knock dir: " + faceX + ", " + faceY + ", " + faceZ);
 		
+		
+		
 		Vec3d dir = new Vec3d(faceX, faceY, faceZ).normalize();*/
-		Vec3d dir = new Vec3d(entityHit.posX, entityHit.posY, entityHit.posZ).subtract(new Vec3d(player.posX, player.posY, player.posZ)).normalize();
+		/*Vec3d dir = new Vec3d(entityHit.posX, entityHit.posY, entityHit.posZ).subtract(new Vec3d(player.posX, player.posY, player.posZ)).normalize();
 		System.out.println("KB: " + (knockBack) + " (statbonus: " + statBonus + ")");
 		Vec3d knock = dir.scale(knockBack * (statBonus));
 		entityHit.motionX += knock.xCoord;
 		entityHit.motionY += knock.yCoord;
 		entityHit.motionZ += knock.zCoord;
-		entityHit.velocityChanged = true;
+		entityHit.velocityChanged = true;*/
 	}
 	
 	public static void UseServer(BaseMove move, SaiyanPlayer user, Entity entityHit){
