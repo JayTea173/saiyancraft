@@ -31,7 +31,6 @@ public class SaiyanCraft
     public static final String resourcePrefix = modId.toLowerCase() + ":";
     
     public static SimpleNetworkWrapper network;
-    public static SoundHandler soundHandler;
     
     @SidedProxy(serverSide = "com.jaynopp.saiyancraft.CommonProxy", clientSide = "com.jaynopp.saiyancraft.ClientProxy")
     public static CommonProxy proxy;
@@ -50,7 +49,6 @@ public class SaiyanCraft
     	network.registerMessage(SaiyanBattlerMessageHandler.class, SyncSaiyanBattlerMessage.class, 2, Side.CLIENT);
     	network.registerMessage(UseMoveMessageHandler.class, UseMoveMessage.class, 3, Side.SERVER);
     	network.registerMessage(UseMoveMessageHandler.class, UseMoveMessage.class, 3, Side.CLIENT);
-    	soundHandler = Minecraft.getMinecraft().getSoundHandler();
     	proxy.preInit(event);
     }
     

@@ -6,6 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SaiyanMovement {
 
@@ -32,13 +35,14 @@ public class SaiyanMovement {
 	public SaiyanMovement(SaiyanPlayer splayer) {
 		this.splayer = splayer;
 		this.player = splayer.player;
-		player.capabilities.setPlayerWalkSpeed(0f);
-		new Vec3d(0d, 0d, 0d);
 		relativeVelocity = new Vec3d(player.motionX, player.motionY, player.motionZ);
 		velocity = relativeVelocity.rotateYaw((float)Math.toRadians(-player.rotationYaw));
-		player.capabilities.setPlayerWalkSpeed(0f);
+		if (FMLCommonHandler.instance().getEffectiveSide()==Side.CLIENT)
+				player.capabilities.setPlayerWalkSpeed(0f);
 
 	}
+	
+
 	
 	public void GroundedChange(boolean groundedNow){
 		previouslyGrounded = groundedNow;

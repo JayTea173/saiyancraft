@@ -2,6 +2,7 @@ package com.jaynopp.saiyancraft;
 
 import com.jaynopp.saiyancraft.init.ModBlocks;
 import com.jaynopp.saiyancraft.init.ModItems;
+import com.jaynopp.saiyancraft.init.ModSounds;
 import com.jaynopp.saiyancraft.input.KeyBindings;
 import com.jaynopp.saiyancraft.input.KeyInputHandler;
 import com.jaynopp.saiyancraft.item.ItemEventHandler;
@@ -10,6 +11,7 @@ import com.jaynopp.saiyancraft.player.StatusBarEventHandler;
 import com.jaynopp.saiyancraft.player.gui.SaiyanHud;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -18,7 +20,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 public class ClientProxy extends CommonProxy {
 	SaiyanHud hud;
-	
+    public static SoundHandler soundHandler;
 	
 	@Override
 	public void preInit(FMLPreInitializationEvent event){
@@ -40,6 +42,8 @@ public class ClientProxy extends CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new SaiyanPlayerClientEventHandler());
 		MinecraftForge.EVENT_BUS.register(new StatusBarEventHandler());
 		MinecraftForge.EVENT_BUS.register(new ItemEventHandler());
+    	soundHandler = Minecraft.getMinecraft().getSoundHandler();
+		ModSounds.RegisterSounds();
 	}
 	
 	@Override

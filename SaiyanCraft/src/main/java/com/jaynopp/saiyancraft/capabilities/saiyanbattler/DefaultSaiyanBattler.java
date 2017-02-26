@@ -65,8 +65,9 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 						}
 					}
 				}
-			} else
-				System.out.println("Unable to find SaiyanPlayer: " + entity.getName());
+			} else {
+				System.out.println("Unable to find SaiyanPlayer!");
+			}
 		}
 
 		if (stunTime > 0f && dt > 0f){

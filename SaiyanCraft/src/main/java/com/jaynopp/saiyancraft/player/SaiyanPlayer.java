@@ -161,7 +161,7 @@ public class SaiyanPlayer {
 	public static void Initialize(EntityPlayer player){
 		
 		SaiyanPlayer sp = new SaiyanPlayer(player);
-		if (player == Minecraft.getMinecraft().player)
+		if (player.world.isRemote)
 			local = sp;
 		
 		System.out.println("adding splayer: " + player.getName());
@@ -172,8 +172,8 @@ public class SaiyanPlayer {
 	public static void Initialize(EntityPlayer player, SaiyanPlayer old){
 		
 		SaiyanPlayer sp = new SaiyanPlayer(player);
-		if (player == Minecraft.getMinecraft().player)
-			local = sp;
+		if (player.world.isRemote)
+				local = sp;
 
 		System.out.println("updating splayer: " + player.getName());
 		players.remove(player.getName(), old);
@@ -184,11 +184,16 @@ public class SaiyanPlayer {
 				
 	}
 	
+	
 	public static SaiyanPlayer Get(EntityPlayer player){
 		//System.out.println("Looking for splayer of " + player.getName() + ", we have " + players.size());
 		String name = player.getName();
-		if (players.containsKey(name))
-			return players.get(name);
+		if (players.containsKey(name)){
+			SaiyanPlayer p = players.get(name);
+			if (p == null)
+				System.out.println("Your player lists contains null player!");
+			return p;
+		}
 
 		System.out.println("UNABLE TO FIND SPLAYER!");
 		return null;
@@ -242,7 +247,7 @@ public class SaiyanPlayer {
 	}
 	
 	public boolean IsLocalPlayer(){
-		return player == Minecraft.getMinecraft().player;
+		return player == local.player;
 	}
 
 	public void OnJump() {
@@ -262,7 +267,7 @@ public class SaiyanPlayer {
 	}
 	
 	public static boolean isPlayerEntityUsingFists(){
-		EntityPlayer player = Minecraft.getMinecraft().player;
+		EntityPlayer player = local.player;
 		if (player.getHeldItemMainhand().getItem() == net.minecraft.init.Items.AIR && player.getHeldItemOffhand().getItem() == net.minecraft.init.Items.AIR)
 			return true;
 		;

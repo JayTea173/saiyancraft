@@ -29,6 +29,7 @@ public class CommonProxy {
 
 	
 	public void preInit(FMLPreInitializationEvent event){
+		
 		SaiyanCraft.itemValueManager = new ItemValueManager();		
 		try {
 			SaiyanCraft.itemValueManager.Initialize();
@@ -36,6 +37,7 @@ public class CommonProxy {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		SaiyanCraft.itemValueManager.BakeValueList();
 		
 		CapabilityManager.INSTANCE.register(ISaiyanData.class, new SayanDataStorage(), DefaultSaiyanData.class);
@@ -46,7 +48,6 @@ public class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new SaiyanCraftServerEventHandler());
 		ModItems.init();
 		ModBlocks.init();
-		ModSounds.RegisterSounds();
 	}
 	
 	public void init(FMLInitializationEvent event){

@@ -9,6 +9,7 @@ import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataProvider;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 import com.jaynopp.saiyancraft.init.ModMoves;
+import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -44,6 +45,9 @@ public class CapabilityHandler {
 	public void onPlayerLogsIn(PlayerLoggedInEvent event){
 		
 		EntityPlayer player = event.player;
+		System.out.println(player.getName() + " logged in! Creating SaiyanPlayer.");
+		SaiyanPlayer.Initialize(player);
+		
 		if (player.hasCapability(SaiyanDataProvider.POWERLEVEL_CAP, null)){
 			ISaiyanData cap = player.getCapability(SaiyanDataProvider.POWERLEVEL_CAP, null);
 			DefaultSaiyanData.UpdateStats(player);
