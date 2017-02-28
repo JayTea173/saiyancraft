@@ -149,4 +149,18 @@ public class DefaultSaiyanData implements ISaiyanData {
 		stamina = value;
 		
 	}
+	
+	public DefaultSaiyanData(float vit, float end, float ski, float str, float agi, float spi){
+		this.vitality = vit;
+		this.endurance = end;
+		this.skill = ski;
+		this.strength = str;
+		this.agility = agi;
+		this.spirit = spi;
+		this.powerLevel = GetPowerLevel();
+	}
+	
+	public DefaultSaiyanData(){
+		
+	}
 }

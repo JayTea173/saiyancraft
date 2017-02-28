@@ -59,10 +59,15 @@ public interface ISaiyanData {
 			
 			if (carrier.isDead)
 				DefaultSaiyanBattler.carriers.remove(carrier);
-			
+		}
 		/*for (Entity carrier : carriers){
 			if (carrier.hasCapability(SaiyanDataProvider, facing))
 		}*/
-		}
+	}
+	
+	
+	public default boolean IsAllGreaterOrEqual(ISaiyanData data){
+		return (GetPowerLevel() >= data.GetPowerLevel() && GetVitality() >= data.GetVitality() && GetEndurance() >= data.GetEndurance() && 
+				GetSkill() >= data.GetSkill() && GetStrength() >= data.GetStrength() && GetAgility() >= data.GetAgility() && GetSpirit() >= data.GetSpirit());
 	}
 }

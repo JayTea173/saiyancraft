@@ -8,7 +8,12 @@ import net.minecraft.entity.Entity;
 public interface ISaiyanMove {
 	public enum Type {
 		LIGHT_MELEE,
-		HEAVY_MELEE
+		HEAVY_MELEE,
+		KI_BLAST,
+		KI_BEAM,
+		MOVEMENT,
+		EVASION,
+		DEFENSIVE
 	}
 	
 	public void Use(SaiyanPlayer user, Entity entityHit);

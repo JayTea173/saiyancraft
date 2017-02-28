@@ -10,6 +10,8 @@ import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
 import com.jaynopp.saiyancraft.eventhandlers.EventHandler;
 import com.jaynopp.saiyancraft.init.ModBlocks;
 import com.jaynopp.saiyancraft.init.ModItems;
+import com.jaynopp.saiyancraft.init.ModLearnables;
+import com.jaynopp.saiyancraft.init.ModMoves;
 import com.jaynopp.saiyancraft.init.ModSounds;
 import com.jaynopp.saiyancraft.item.ItemValueManager;
 import com.jaynopp.saiyancraft.player.SaiyanPlayerCommonEventHandler;
@@ -48,6 +50,8 @@ public class CommonProxy {
 		MinecraftForge.EVENT_BUS.register(new SaiyanCraftServerEventHandler());
 		ModItems.init();
 		ModBlocks.init();
+		ModMoves.Init();
+		ModLearnables.Init();
 	}
 	
 	public void init(FMLInitializationEvent event){
