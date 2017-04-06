@@ -5,12 +5,7 @@ import com.jaynopp.saiyancraft.SaiyanCraft;
 import com.jaynopp.saiyancraft.lib.Names;
 
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.world.World;
 
 public class DragonBall extends Item implements JNItemInitializer {
 	public static DragonBall instance;
@@ -23,7 +18,7 @@ public class DragonBall extends Item implements JNItemInitializer {
 		JNItemInitializer.super.Initialize(this, SaiyanCraft.resourcePrefix, Names.Items.DRAGON_BALL);
 		setCreativeTab(CreativeTabs.MATERIALS);
 	}
-	
+	/*1.11
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand){
 		if (!world.isRemote){
@@ -33,6 +28,7 @@ public class DragonBall extends Item implements JNItemInitializer {
 		}
 		return super.onItemRightClick(world, player, hand);
 	}
+	*/
 	
 
 	

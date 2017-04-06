@@ -13,13 +13,13 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class SaiyanPickaxe extends ItemPickaxe implements JNItemInitializer {
 	
@@ -28,6 +28,8 @@ public class SaiyanPickaxe extends ItemPickaxe implements JNItemInitializer {
 	
 	public static void Initialize(){
 		instance = new SaiyanPickaxe(ToolMaterial.WOOD);
+		
+		GameRegistry.addSmelting(Items.IRON_PICKAXE, new ItemStack(instance), 4);
 	}
 	
 	protected SaiyanPickaxe(ToolMaterial material) {
@@ -49,7 +51,7 @@ public class SaiyanPickaxe extends ItemPickaxe implements JNItemInitializer {
 		}
 		
 	}
-
+	/*1.11
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand){
 		ItemStack stack = (hand == EnumHand.MAIN_HAND) ? player.getHeldItemMainhand() : player.getHeldItemOffhand();
@@ -62,6 +64,7 @@ public class SaiyanPickaxe extends ItemPickaxe implements JNItemInitializer {
 		}
 		return super.onItemRightClick(world, player, hand);
 	}
+	*/
 	
 	public void IncreasePowerLevel(ItemStack stack, double inc){
 		double pl = GetNBTFieldDouble(stack, "powerLevel", 0d);

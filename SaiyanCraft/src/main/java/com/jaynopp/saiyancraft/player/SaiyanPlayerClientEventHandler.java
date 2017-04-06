@@ -5,6 +5,7 @@ import com.jaynopp.saiyancraft.SaiyanCraft;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
+import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -30,6 +31,17 @@ public class SaiyanPlayerClientEventHandler {
         		}
         	}
         }
+    }
+    
+    @SubscribeEvent
+    public void onRenderHand(RenderHandEvent event){
+    	if (SaiyanPlayer.local != null){
+    		if (SaiyanPlayer.isPlayerEntityUsingFists()){
+    			//event.setCanceled(true);
+    			//SaiyanPlayer.local.RenderHands();
+    		}
+    	}
+    	
     }
 	
 	

@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class UseMoveMessage implements IMessage {
 
-	public BaseMove move;
+	public BaseMeleeMove move;
 	public Entity target;
 	public int worldID;
 	
@@ -16,7 +16,7 @@ public class UseMoveMessage implements IMessage {
 	}
 	
 	public UseMoveMessage(ISaiyanMove move, Entity target, int worldID){
-		this.move = (BaseMove) move;
+		this.move = (BaseMeleeMove) move;
 		this.target = target;
 		this.worldID = worldID;
 	}
@@ -24,7 +24,7 @@ public class UseMoveMessage implements IMessage {
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		worldID = buf.readInt();
-		move = BaseMove.ReadFromBytes(buf);
+		move = BaseMeleeMove.ReadFromBytes(buf);
 		target = DimensionManager.getWorld(worldID).getEntityByID(buf.readInt());
 		System.out.println("translated entity id to " + target.getName());
 
@@ -33,7 +33,7 @@ public class UseMoveMessage implements IMessage {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		buf.writeInt(worldID);
-		BaseMove.WriteFromBytes(buf, move);
+		BaseMeleeMove.WriteFromBytes(buf, move);
 		buf.writeInt(target.getEntityId());
 	}
 

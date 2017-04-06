@@ -1,5 +1,6 @@
 package com.jaynopp.saiyancraft.player;
 
+import com.jaynopp.saiyancraft.capabilities.saiyanbattler.ISaiyanBattler;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 
 import net.minecraft.client.Minecraft;
@@ -8,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.relauncher.Side;
-import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class SaiyanMovement {
 
@@ -16,6 +16,7 @@ public class SaiyanMovement {
 	private boolean previouslyGrounded;
 	private SaiyanPlayer splayer;
 	private EntityPlayer player;
+	private ISaiyanBattler battler;
 	
 	private boolean triedToMoveLastFrame;
 	private double speedLimit = 1d;
@@ -35,6 +36,7 @@ public class SaiyanMovement {
 	public SaiyanMovement(SaiyanPlayer splayer) {
 		this.splayer = splayer;
 		this.player = splayer.player;
+		this.battler = splayer.GetBattler();
 		relativeVelocity = new Vec3d(player.motionX, player.motionY, player.motionZ);
 		velocity = relativeVelocity.rotateYaw((float)Math.toRadians(-player.rotationYaw));
 		if (FMLCommonHandler.instance().getEffectiveSide()==Side.CLIENT)
@@ -94,14 +96,15 @@ public class SaiyanMovement {
 		
 		
 		//acceleration = Math.pow(.2d, .5d/(data.GetAgility()));
-		speedLimit = 1d + data.speedBonus;
+		speedLimit = .8d + data.speedBonus;
 
 		boolean charging = splayer.isChargingHeavy();
-		currSpeedLimit = player.isSneaking() ? Math.min( Math.pow(speedLimit, .2d) * .5d, 1d) : (player.isSprinting() && ! charging) ? (speedLimit + .5d) : Math.pow(speedLimit, .2d);			
+		currSpeedLimit = player.isSneaking() ? Math.min( Math.pow(speedLimit, .2d) * .5d, 1d) : (player.isSprinting() && ! charging) ? (speedLimit + .35d) : Math.pow(speedLimit, .2d) * .75f;			
 		if (charging)
 			currSpeedLimit *= .333f;
 		if (splayer.isBlocking())
 			currSpeedLimit *= .1f;
+
 		boolean inLava = player.isInLava();
 		boolean inWater = player.isInWater();
 		if (player.onGround || inLava || inWater){
@@ -121,6 +124,8 @@ public class SaiyanMovement {
 					acc = acc.scale(.2d);
 				if (inWater)
 					acc = acc.scale(.5d);
+				if (battler.IsStunned())
+					acc = acc.scale(0d);
 				
 				velocity = velocity.add(acc.rotateYaw((float)Math.toRadians(-player.rotationYaw)));
 			}
@@ -168,7 +173,7 @@ public class SaiyanMovement {
 	}
 
 	public void OnJump() {
-		if (!canJump){
+		if (!canJump || battler.IsStunned()){
 			if (player.onGround)
 				player.motionY = 0d;
 

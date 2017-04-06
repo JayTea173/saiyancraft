@@ -12,17 +12,15 @@ import com.jaynopp.saiyancraft.capabilities.saiyanbattler.SaiyanBattlerProvider;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 import com.jaynopp.saiyancraft.input.KeyBindings;
-import com.jaynopp.saiyancraft.player.moves.BaseMove;
+import com.jaynopp.saiyancraft.player.moves.BaseMeleeMove;
 import com.jaynopp.saiyancraft.player.moves.combos.ComboManager;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 
@@ -74,13 +72,24 @@ public class SaiyanPlayer {
 		ISaiyanBattler attackerBattler = (attacker == null) ? null : attacker.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
 		boolean blocked = false;
 		if (timeBlocked < 0.2f)
-			blocked = HandlePerfectBlockAttack(event, attacker, attackerBattler);
+			blocked = HandlePerfectBlockAttack(event.getAmount(), attacker, attackerBattler);
 		else
-			blocked = HandleBlockAttack(event, attacker, attackerBattler);
+			blocked = HandleBlockAttack(event.getAmount(), attacker, attackerBattler);
+
+	}
+
+	public void HandleBlockingDamage(Entity attacker, float amount){
+		ISaiyanBattler attackerBattler = (attacker == null) ? null : attacker.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
+		System.out.println("blocked " + attacker.getName());
+		boolean blocked = false;
+		if (timeBlocked < 0.2f)
+			blocked = HandlePerfectBlockAttack(amount, attacker, attackerBattler);
+		else
+			blocked = HandleBlockAttack(amount, attacker, attackerBattler);
 
 	}
 	
-	private boolean HandlePerfectBlockAttack(LivingAttackEvent event, Entity attacker, ISaiyanBattler attackerBattler){
+	private boolean HandlePerfectBlockAttack(float amount, Entity attacker, ISaiyanBattler attackerBattler){
 		float staminaUsage = 10f;
 		boolean enoughStamina = UseStamina(staminaUsage);
 		
@@ -89,7 +98,7 @@ public class SaiyanPlayer {
 				if (attackerBattler != null){
 					EntityLivingBase livingEntity = ((EntityLivingBase)attacker);
 					attackerBattler.SetStunTime(1.2f);
-					BaseMove.KnockBackEntity(player, attacker, 1.3f, false);
+					BaseMeleeMove.KnockBackEntity(player, attacker, 1.3f, false);
 					DefaultSaiyanBattler.AddStun(livingEntity);
 					if (player.world.isRemote)
 						Minecraft.getMinecraft().effectRenderer.emitParticleAtEntity(attacker, EnumParticleTypes.CRIT);
@@ -102,16 +111,16 @@ public class SaiyanPlayer {
 		
 		
 		if (enoughStamina)
-			event.setCanceled(true);
+			amount = 0f;
 		else
-			event.setCanceled(false);
+			amount = amount + .1f;
 		
 		timeUsedStamina = 500; //instantly reg stamina
 		return enoughStamina;
 	}
 	
-	private boolean HandleBlockAttack(LivingAttackEvent event, Entity attacker, ISaiyanBattler attackerBattler){
-		float staminaUsage = (float) Math.pow(event.getAmount() * 2.5d, (0.01d + (Math.pow(3d / GetStats().GetPowerLevel(), 0.045d) * 0.99d)));
+	private boolean HandleBlockAttack(float amount, Entity attacker, ISaiyanBattler attackerBattler){
+		float staminaUsage = (float) Math.pow(amount * 2.5d, (0.01d + (Math.pow(3d / GetStats().GetPowerLevel(), 0.045d) * 0.99d)));
 		boolean enoughStamina = UseStaminaAndIncreaseStats(staminaUsage, .25f);
 		if (attacker != null){
 			if (attacker instanceof EntityLivingBase){
@@ -126,10 +135,10 @@ public class SaiyanPlayer {
 				
 			}
 			//Minecraft.getMinecraft().effectRenderer.emitParticleAtEntity(player, EnumParticleTypes.DAMAGE_INDICATOR);
-			float damage = event.getAmount() * 4f;
+			float damage = amount * 4f;
 			if (attacker != null && player != null)
 				KnockBack(attacker, .8f);
-			event.setCanceled(true);
+			//event.setCanceled(true);
 			timeUsedStamina = -500; //another .5 seconds until stamina regens
 		} else {
 			if (player.world.isRemote){
@@ -139,8 +148,8 @@ public class SaiyanPlayer {
 			ISaiyanBattler battler = GetBattler();
 			battler.SetStunTime(2f);
 			if (attacker != null && player != null){
-				movement.KnockAirborne(0.25f * event.getAmount());
-				KnockBack(attacker, 0.4f + event.getAmount() * 0.1f);	
+				movement.KnockAirborne(0.25f * amount);
+				KnockBack(attacker, 0.4f + amount * 0.1f);	
 			}
 			timeUsedStamina = -1000; //extra 1 second stamina regen timeout
 		}
@@ -161,8 +170,10 @@ public class SaiyanPlayer {
 	public static void Initialize(EntityPlayer player){
 		
 		SaiyanPlayer sp = new SaiyanPlayer(player);
-		if (player.world.isRemote)
+		if (player.world.isRemote && Minecraft.getMinecraft().player == player){
 			local = sp;
+			System.out.println("Local player set to: " + player.getDisplayName());
+		}
 		
 		System.out.println("adding splayer: " + player.getName());
 		players.put(player.getName(), sp);
@@ -172,8 +183,10 @@ public class SaiyanPlayer {
 	public static void Initialize(EntityPlayer player, SaiyanPlayer old){
 		
 		SaiyanPlayer sp = new SaiyanPlayer(player);
-		if (player.world.isRemote)
+		if (player.world.isRemote && Minecraft.getMinecraft().player == player){
 				local = sp;
+				System.out.println("Local player set to: " + player.getDisplayName());
+		}
 
 		System.out.println("updating splayer: " + player.getName());
 		players.remove(player.getName(), old);
@@ -199,6 +212,10 @@ public class SaiyanPlayer {
 		return null;
 	}
 	
+	public void RenderHands(){
+		
+	}
+	
 	public void Update(){
 		if (player.isSwingInProgress){
 			//if (player.swingProgress > 1f)
@@ -208,7 +225,7 @@ public class SaiyanPlayer {
 		
 		updates++;
 		if (updates % 120 == 0){
-			System.out.println("Sending periodic update to server.");
+			//System.out.println("Sending periodic update to server.");
 			SaiyanCraft.network.sendToServer(new SyncSaiyanDataMessage(GetStats()));
 		}
 		DefaultSaiyanData data = GetStats();
@@ -260,15 +277,17 @@ public class SaiyanPlayer {
 	}
 	
 	public static boolean isPlayerEntityUsingFists(EntityPlayer player){
-		if (player.getHeldItemMainhand().getItem() == net.minecraft.init.Items.AIR && player.getHeldItemOffhand().getItem() == net.minecraft.init.Items.AIR)
+		//replace null with getItem() == net.minecraft.init.Items.AIR (1.11)
+		if (player.getHeldItemMainhand() == null && player.getHeldItemOffhand() == null)
 			return true;
 		
 		return false;
 	}
 	
 	public static boolean isPlayerEntityUsingFists(){
+		//replace null with net.minecraft.init.Items.AIR (1.11)
 		EntityPlayer player = local.player;
-		if (player.getHeldItemMainhand().getItem() == net.minecraft.init.Items.AIR && player.getHeldItemOffhand().getItem() == net.minecraft.init.Items.AIR)
+		if (player.getHeldItemMainhand() == null && player.getHeldItemOffhand() == null)
 			return true;
 		;
 		return false;
@@ -294,6 +313,26 @@ public class SaiyanPlayer {
 	public boolean UseStamina(float amount){
 		return UseStaminaAndIncreaseStats(amount, 1f);
 	}
+	
+	private boolean UseKiAndIncreaseStats(float amount, float statGainMod){
+		DefaultSaiyanData data = GetStats();
+		float curr = data.GetKi();
+		float max = data.GetMaxKi();
+		if (curr >= amount){
+			data.SetKi(curr - amount);
+		} else {
+			data.SetKi(0f);
+			return false;	
+		}
+		float spi = data.GetSpirit();
+		float bonus = (float) (amount * 0.0004d / Math.pow(max / 100d, 0.66d) / Math.pow(spi, 0.5d));
+		data.SetSpirit(spi + statGainMod * bonus);
+		return true;	
+	}
+	
+	public boolean UseKi(float amount){
+		return UseKiAndIncreaseStats(amount, 1f);
+	}
 
 	public boolean isChargingHeavy() {
 		return chargingHeavy;
@@ -309,5 +348,28 @@ public class SaiyanPlayer {
 	public Entity GetRayTraceTargetEntity() {
 		
 		return Minecraft.getMinecraft().objectMouseOver.entityHit;
+	}
+
+	public void Damage(EntityPlayerMP victim, Entity attacker, float amount) {
+		amount *= (1f - (float)victim.getTotalArmorValue() * 0.04f);
+		victim.setHealth(victim.getHealth() - amount);
+		if (this == local)
+			player.performHurtAnimation();
+		//System.out.println("Dealing " + amount + " damage to " + victim.getDisplayNameString() + " with " + victim.getTotalArmorValue() + " armor " + " health is now " + victim.getHealth() + "/" + victim.getMaxHealth());
+		DefaultSaiyanData data = GetStats();
+		float curr = data.GetVitality();
+		float bonus = 1f;
+		if (!(Float.isInfinite(bonus) && curr == 0f))
+			bonus = (float) (Math.pow(amount / curr, 1.4d) * .0025d);
+
+		//System.out.println("Player was attacked! Vitality Stat increased by " + bonus);
+		data.SetVitality(curr + bonus);
+		DefaultSaiyanData.UpdateStats(player);
+		if (local == this){
+			
+		}
+		if (player.getHealth() < 0f){
+			player.onKillCommand();
+		}
 	}
 }

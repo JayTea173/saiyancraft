@@ -5,13 +5,17 @@ import com.jaynopp.saiyancraft.capabilities.saiyanbattler.SyncSaiyanBattlerMessa
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataMessageHandler;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 import com.jaynopp.saiyancraft.item.ItemValueManager;
+import com.jaynopp.saiyancraft.player.BlockableDamageMessage;
+import com.jaynopp.saiyancraft.player.BlockableDamageMessageHandler;
 import com.jaynopp.saiyancraft.player.ClientPlayerFallMessage;
+import com.jaynopp.saiyancraft.player.DamageSenderMessage;
+import com.jaynopp.saiyancraft.player.DamageSenderMessageHandler;
+import com.jaynopp.saiyancraft.player.KnockBackLocalMessage;
+import com.jaynopp.saiyancraft.player.KnockBackLocalMessageHandler;
 import com.jaynopp.saiyancraft.player.ServerSaiyanPlayerMessageHandler;
 import com.jaynopp.saiyancraft.player.moves.UseMoveMessage;
 import com.jaynopp.saiyancraft.player.moves.UseMoveMessageHandler;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SoundHandler;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
@@ -49,6 +53,9 @@ public class SaiyanCraft
     	network.registerMessage(SaiyanBattlerMessageHandler.class, SyncSaiyanBattlerMessage.class, 2, Side.CLIENT);
     	network.registerMessage(UseMoveMessageHandler.class, UseMoveMessage.class, 3, Side.SERVER);
     	network.registerMessage(UseMoveMessageHandler.class, UseMoveMessage.class, 3, Side.CLIENT);
+    	network.registerMessage(BlockableDamageMessageHandler.class, BlockableDamageMessage.class, 4, Side.CLIENT);
+    	network.registerMessage(DamageSenderMessageHandler.class, DamageSenderMessage.class, 5, Side.SERVER);
+    	network.registerMessage(KnockBackLocalMessageHandler.class, KnockBackLocalMessage.class, 6, Side.CLIENT);
     	proxy.preInit(event);
     }
     

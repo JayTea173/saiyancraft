@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -23,12 +24,11 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.ShapedRecipes;
-import net.minecraft.util.NonNullList;
+//import net.minecraft.util.NonNullList; //1.11
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.registry.RegistryNamespaced;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import scala.actors.threadpool.Arrays;
 
 public class ItemValueManager {
 	public Map<String, Float> values = new HashMap<String, Float>();
@@ -90,16 +90,16 @@ public class ItemValueManager {
 		  }
 		  
 		  scanner.close();
-		} finally {
-			if (vin != null)
-				vin.close();
-			System.out.println("SaiyanCraft loaded " + values.size() + " ItemValues.");
-		}
+		 } finally {
+				if (vin != null)
+					vin.close();
+				System.out.println("SaiyanCraft loaded " + values.size() + " ItemValues.");
+			}
 	}
 
 	public float GetStackValue(ItemStack stack){
 		
-		return GetValue(stack.getItem()) * (float)stack.getCount();
+		return GetValue(stack.getItem()) * (float)stack.stackSize;
 	}
 	
 	
@@ -122,8 +122,20 @@ public class ItemValueManager {
 		
 		if (containsKey) {
 			return values.get(key);
-		} else
-			return GetNewValueFromCraftable(item);
+		} else {
+			float result = 1f;
+			try {
+				result = GetNewValueFromCraftable(item);
+				
+			} catch (Exception e){
+					System.out.println("Error in GetValue for item: " + item.getRegistryName());
+				
+			} finally {
+				
+			}
+			//return GetNewValueFromCraftable(item); //crashes with other mods installed
+			return result;
+		}
 	}
 	
 	public float GetValue(Block block){
@@ -147,7 +159,10 @@ public class ItemValueManager {
 	    }, 3, 3);
 		//System.out.println("Trying to get ItemValue from recipe for " + item.getUnlocalizedName());
 		for (IRecipe recipe : recipes){
-			int amountOut = recipe.getRecipeOutput().getCount();
+			ItemStack output = recipe.getRecipeOutput();
+			if (output == null)
+				continue;
+			int amountOut = output.stackSize;
 			
 			if (recipe.getRecipeOutput().getItem() == item){
 				if (recipe instanceof ShapedOreRecipe){
@@ -162,7 +177,10 @@ public class ItemValueManager {
 					List<Float> recipeItems = Arrays.asList(GetItemStacksValues(_recipe.recipeItems));
 					Float lowest = (Float)GetLowestValueInList(recipeItems);
 					//System.out.println("Lowest of all the possible recipeItems: " + lowest + " in recipe: " + _recipe.recipeItems);
-					result = lowest;	
+					if (lowest == null)
+						result = 0f;
+					else
+						result = lowest;	
 				} else
 					System.out.println("The ItemValueManager doesn't know how to handle recipe type " + recipe.getClass());
 				
@@ -179,8 +197,10 @@ public class ItemValueManager {
 	public Float[] GetItemStacksValues(ItemStack[] stacks){
 		Float[] result = new Float[stacks.length];
 		for (int i = 0; i < stacks.length; i++){
-			//System.out.println("getting stacksvalue for stack item(" + i + "): " + stacks[i].getItem().getUnlocalizedName() + ", current: " + currentItemSearchStack.get(currentItemSearchStack.size() - 1).getUnlocalizedName());
-			result[i] = GetValue(stacks[i].getItem());
+			if (stacks[i] != null){
+				//System.out.println("getting stacksvalue for stack item(" + i + "): " + stacks[i].getItem().getUnlocalizedName() + ", current: " + currentItemSearchStack.get(currentItemSearchStack.size() - 1).getUnlocalizedName());
+				result[i] = GetValue(stacks[i].getItem());
+			}
 		}
 		return result;
 	}
@@ -197,9 +217,11 @@ public class ItemValueManager {
 	        minIndex = itr.previousIndex();
 	        while (itr.hasNext()) {
 	            final T curr = itr.next();
-	            if (curr.compareTo(min) < 0) {
-	                min = curr;
-	                minIndex = itr.previousIndex();
+	            if (curr != null && min != null){
+		            if (curr.compareTo(min) < 0) {
+		                min = curr;
+		                minIndex = itr.previousIndex();
+		            }
 	            }
 	        }
 	        return min;
@@ -210,11 +232,11 @@ public class ItemValueManager {
 		float result = 0f;
 		float inner = 0f;
 		for (Object in : input){
-			if (in instanceof NonNullList){
+			if (in instanceof List){
 				@SuppressWarnings("unchecked")
-				NonNullList<ItemStack> inList = (NonNullList<ItemStack>)in;
+				List<ItemStack> inList = (List<ItemStack>)in;
 				for (ItemStack stack : inList){
-					if (stack.getItem() == Items.AIR)
+					if (stack.getItem() == null)
 						continue;
 					inner = GetValue(stack.getItem());
 					//System.out.println("recipe +" + inner + ", " + stack.getItem().getUnlocalizedName());
@@ -236,16 +258,16 @@ public class ItemValueManager {
 
 	private void WriteItemValues()  throws IOException {
 		try {
-			  vout = new FileOutputStream(itemValuesPath);
-			  
-			  for(Map.Entry<String, Float> entry : values.entrySet()){
-					vout.write((entry.getKey() + "=").getBytes());
-					vout.write((entry.getValue().toString() + System.lineSeparator()).getBytes());
-				}
-			} finally {
-				if (vin != null)
-					vin.close();	
+		  vout = new FileOutputStream(itemValuesPath);
+		  
+		  for(Map.Entry<String, Float> entry : values.entrySet()){
+				vout.write((entry.getKey() + "=").getBytes());
+				vout.write((entry.getValue().toString() + System.lineSeparator()).getBytes());
 			}
+		} finally {
+			if (vin != null)
+				vin.close();	
+		}
 	}
 	
 	private void SetupDefaultItemValues() {

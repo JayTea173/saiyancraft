@@ -9,6 +9,8 @@ public interface ISaiyanMove {
 	public enum Type {
 		LIGHT_MELEE,
 		HEAVY_MELEE,
+		STATUS,
+		TRANSFORMATION,
 		KI_BLAST,
 		KI_BEAM,
 		MOVEMENT,

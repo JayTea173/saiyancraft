@@ -66,7 +66,7 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 					}
 				}
 			} else {
-				System.out.println("Unable to find SaiyanPlayer!");
+				//System.out.println("Unable to find SaiyanPlayer!");
 			}
 		}
 
@@ -150,13 +150,20 @@ public class DefaultSaiyanBattler implements ISaiyanBattler {
 	public static void AddStun(EntityLivingBase entity) {
 		IAttributeInstance speedAttrib = entity.getEntityAttribute(SharedMonsterAttributes.MOVEMENT_SPEED);
 		IAttributeInstance damageAttrib = entity.getEntityAttribute(SharedMonsterAttributes.ATTACK_DAMAGE);
+		if (entity instanceof EntityPlayer){
+			SaiyanPlayer splayer = SaiyanPlayer.Get((EntityPlayer)entity);
+			if (splayer != null){
 
-		if (speedAttrib != null)
-			if (!speedAttrib.hasModifier(MODIFIER_STUN))
-				speedAttrib.applyModifier(MODIFIER_STUN);
-		if (damageAttrib != null)
-			if (!damageAttrib.hasModifier(MODIFIER_STUN))
-				damageAttrib.applyModifier(MODIFIER_STUN);
+			}
+			
+		} else {
+			if (speedAttrib != null)
+				if (!speedAttrib.hasModifier(MODIFIER_STUN))
+					speedAttrib.applyModifier(MODIFIER_STUN);
+			if (damageAttrib != null)
+				if (!damageAttrib.hasModifier(MODIFIER_STUN))
+					damageAttrib.applyModifier(MODIFIER_STUN);
+		}
 		
 	}
 	

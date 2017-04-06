@@ -6,5 +6,23 @@
 		[
 			{"name": "saiyancraft:player/attack/punch_light", "stream":false}
 		]
+	},
+	"player.attack.punch.light.miss":
+	{
+		"category": "neutral",
+		"sounds":
+		[
+			{"name": "saiyancraft:player/attack/meleemiss1", "stream":false},
+			{"name": "saiyancraft:player/attack/meleemiss2", "stream":false},
+			{"name": "saiyancraft:player/attack/meleemiss3", "stream":false}
+		]
+	},
+	"player.attack.punch.heavy":
+	{
+		"category": "neutral",
+		"sounds":
+		[
+			{"name": "saiyancraft:player/attack/punch_heavy", "stream":false}
+		]
 	}
 }

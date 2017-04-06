@@ -1,7 +1,5 @@
 package com.jaynopp.saiyancraft.capabilities.saiyandata;
 
-import com.jaynopp.saiyancraft.player.SaiyanPlayer;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -15,7 +13,7 @@ public class SaiyanDataMessageHandler implements IMessageHandler<SyncSaiyanDataM
 
 	@Override
 	public IMessage onMessage(SyncSaiyanDataMessage message, MessageContext ctx) {
-		System.out.println("Sync SAIYANDATA!");
+		//System.out.println("Sync SAIYANDATA!");
 		if (ctx.side.isServer()){
 			EntityPlayerMP sender = ctx.getServerHandler().playerEntity;
 			

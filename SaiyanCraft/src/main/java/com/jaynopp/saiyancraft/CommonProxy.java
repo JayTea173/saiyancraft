@@ -12,7 +12,6 @@ import com.jaynopp.saiyancraft.init.ModBlocks;
 import com.jaynopp.saiyancraft.init.ModItems;
 import com.jaynopp.saiyancraft.init.ModLearnables;
 import com.jaynopp.saiyancraft.init.ModMoves;
-import com.jaynopp.saiyancraft.init.ModSounds;
 import com.jaynopp.saiyancraft.item.ItemValueManager;
 import com.jaynopp.saiyancraft.player.SaiyanPlayerCommonEventHandler;
 import com.jaynopp.saiyancraft.server.SaiyanCraftServerEventHandler;

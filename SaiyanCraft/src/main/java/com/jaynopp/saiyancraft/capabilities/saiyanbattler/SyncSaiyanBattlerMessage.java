@@ -2,7 +2,7 @@ package com.jaynopp.saiyancraft.capabilities.saiyanbattler;
 
 import java.util.List;
 
-import com.jaynopp.saiyancraft.player.moves.BaseMove;
+import com.jaynopp.saiyancraft.player.moves.BaseMeleeMove;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import io.netty.buffer.ByteBuf;
@@ -29,7 +29,7 @@ public class SyncSaiyanBattlerMessage implements IMessage {
 		int moves_count = buf.readInt();
 
 		for (int i = 0; i < moves_count; i++){
-			moves.add(BaseMove.ReadFromBytes(buf));
+			moves.add(BaseMeleeMove.ReadFromBytes(buf));
 		}
 	}
 	
@@ -45,7 +45,7 @@ public class SyncSaiyanBattlerMessage implements IMessage {
 		buf.writeInt(moves_count);
 
 		for (int i = 0; i < moves_count; i++){
-			BaseMove.WriteFromBytes(buf, moves.get(i));
+			BaseMeleeMove.WriteFromBytes(buf, moves.get(i));
 		}
 	}
 

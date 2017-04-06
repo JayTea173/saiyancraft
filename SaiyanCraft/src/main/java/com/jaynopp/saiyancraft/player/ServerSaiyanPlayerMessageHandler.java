@@ -23,7 +23,7 @@ public class ServerSaiyanPlayerMessageHandler  implements IMessageHandler<Client
 			public void run(){
 				
 				double fallNegation =  Math.pow((data.GetPowerLevel() - 3d) * 0.001d, .25d);
-				System.out.println("Pla+yer fell, speed on impact: " + message.speed + " negation: " + fallNegation + " pl: " + data.GetPowerLevel());
+				System.out.println("Player fell, speed on impact: " + message.speed + " negation: " + fallNegation + " pl: " + data.GetPowerLevel());
 				if (message.speed > .8d + fallNegation){
 					//event.setDistance(8f);
 					float dmg = (float) (message.speed - .8d + fallNegation) * 10f;

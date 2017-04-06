@@ -1,20 +1,14 @@
 package com.jaynopp.saiyancraft.player;
 
-import com.jaynopp.saiyancraft.SaiyanCraft;
-import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
-import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.IThreadListener;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;

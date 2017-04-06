@@ -2,7 +2,6 @@ package com.jaynopp.saiyancraft.input;
 
 import com.jaynopp.saiyancraft.capabilities.saiyanbattler.DefaultSaiyanBattler;
 import com.jaynopp.saiyancraft.gui.SaiyanPlayerStatusGui;
-import com.jaynopp.saiyancraft.player.SaiyanPlayer;
 
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;

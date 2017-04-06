@@ -4,7 +4,10 @@ import com.jaynopp.saiyancraft.SaiyanCraft;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.util.DamageSource;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
@@ -57,19 +60,27 @@ public class SaiyanPlayerCommonEventHandler {
 			EntityPlayer player = (EntityPlayer)event.getEntity();
 			DefaultSaiyanData data = DefaultSaiyanData.Get(player);
 			SaiyanPlayer splayer = SaiyanPlayer.Get(player);
+			
+			DamageSource source = event.getSource();
+			Entity sourceEntity = source.getEntity();
+			if (event.getSource() == DamageSource.FALL || event.getSource() == DamageSource.DROWN || event.getSource() == DamageSource.IN_FIRE || event.getSource() == DamageSource.LAVA || event.getSource() == DamageSource.OUT_OF_WORLD || event.getSource() == DamageSource.STARVE || event.getSource() == DamageSource.WITHER || event.getSource() == DamageSource.HOT_FLOOR){
+			
+			} else {
+				SaiyanCraft.network.sendTo(new BlockableDamageMessage(event.getAmount(), (sourceEntity == null) ? -1 : sourceEntity.getEntityId()), (EntityPlayerMP) player);
+				//SaiyanCraft.network.sendToAll(new BlockableDamageMessage(event.getAmount(), event.getEntity().getEntityId()));
+				//System.out.println("ATTACKEVENT: Sending damage message to " + player.getDisplayNameString());
+				event.setCanceled(true);
+			}
+			
+			
+			/*
 			if (splayer.isBlocking()){
 				splayer.HandleBlockingEvent(event);
-				
+				System.out.println("Player is blocking.");
 			} else {
-				float curr = data.GetVitality();
-				float bonus = 1f;
-				if (!(Float.isInfinite(bonus) && curr == 0f))
-					bonus = (float) (Math.pow(event.getAmount() / curr, 1.4d) * .0025d);
-	
-				System.out.println("Player was attacked! Vitality Stat increased by " + bonus);
-				data.SetVitality(curr + bonus);
-				DefaultSaiyanData.UpdateStats(player);
-			}
+				System.out.println("Player is NOT blocking.");
+				
+			}*/
 		}
 	}
 	
@@ -87,13 +98,18 @@ public class SaiyanPlayerCommonEventHandler {
 		data.SetStrength(curr + bonus);
 		DefaultSaiyanData.UpdateStats(event.getPlayer());
 		SaiyanCraft.network.sendToServer(new SyncSaiyanDataMessage(data));
+		//event.setCanceled(true);
 		
 	}
 	
 	@SubscribeEvent
 	public void onEntityHurt(LivingHurtEvent event){
 		if (event.getEntity() instanceof EntityPlayer){
-			DefaultSaiyanData data = DefaultSaiyanData.Get((EntityPlayer)event.getEntity());
+			EntityPlayer player = (EntityPlayer)event.getEntity();
+			DefaultSaiyanData data = DefaultSaiyanData.Get(player);
+			//SaiyanCraft.network.sendTo(new BlockableDamageMessage(event.getAmount(), event.getEntity().getEntityId()), (EntityPlayerMP) player);
+			//SaiyanCraft.network.sendToAll(new BlockableDamageMessage(event.getAmount(), event.getEntity().getEntityId()));
+			//System.out.println("HURTEVENT: Sending damage message to " + player.getDisplayNameString());
 			float curr = data.GetVitality();
 			float bonus = 1f;
 			if (!(Float.isInfinite(bonus) && curr == 0f))

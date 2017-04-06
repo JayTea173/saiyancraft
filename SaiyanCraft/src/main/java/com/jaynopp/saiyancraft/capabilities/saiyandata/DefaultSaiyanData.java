@@ -56,7 +56,7 @@ public class DefaultSaiyanData implements ISaiyanData {
 			return;
 		double pl = cap.GetPowerLevel();
 		float agi = cap.GetAgility();
-		cap.speedBonus = (float)(Math.pow(agi - 1d, .75d) / Math.pow(1d / pl, .075f) * .1d);
+		cap.speedBonus = (float)(Math.pow(agi - 1d, .75d) / Math.pow(1d / pl, .075f) * .08d);
 
 	}
 	

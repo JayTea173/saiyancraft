@@ -3,7 +3,7 @@ package com.jaynopp.saiyancraft.storage;
 import java.util.List;
 
 import com.jaynopp.saiyancraft.capabilities.saiyanbattler.ISaiyanBattler;
-import com.jaynopp.saiyancraft.player.moves.BaseMove;
+import com.jaynopp.saiyancraft.player.moves.BaseMeleeMove;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import net.minecraft.nbt.NBTBase;
@@ -51,9 +51,9 @@ public class SaiyanBattlerStorage implements IStorage<ISaiyanBattler> {
 		
 	}
 	
-	public BaseMove ReadMove(NBTTagCompound nbt, int index){
+	public BaseMeleeMove ReadMove(NBTTagCompound nbt, int index){
 		String prefix = "move" + index + "_";
-		return new BaseMove(nbt.getFloat(prefix + "cooldown"), nbt.getFloat(prefix + "stuntime"), ISaiyanMove.Type.values()[nbt.getInteger(prefix + "type")],
+		return new BaseMeleeMove(nbt.getFloat(prefix + "cooldown"), nbt.getFloat(prefix + "stuntime"), ISaiyanMove.Type.values()[nbt.getInteger(prefix + "type")],
 				nbt.getFloat(prefix + "power"), nbt.getFloat(prefix + "knockback"), nbt.getFloat(prefix + "chargetime"), nbt.getFloat(prefix + "chargepowermodifier"));
 
 	}

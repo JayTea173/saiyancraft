@@ -7,7 +7,8 @@ import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
 import com.jaynopp.saiyancraft.player.BaseLearnable;
 import com.jaynopp.saiyancraft.player.ILearnable;
-import com.jaynopp.saiyancraft.player.moves.BaseMove;
+import com.jaynopp.saiyancraft.player.moves.BaseMeleeMove;
+import com.jaynopp.saiyancraft.player.moves.BaseToggleableMove;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 import com.jaynopp.saiyancraft.player.moves.ISaiyanMove.Type;
 
@@ -22,8 +23,10 @@ public class ModLearnables {
 		learnables = new ArrayList<ILearnable>();
 		//Register(new BaseLearnable(null, null))
 		
-		RegisterMoveAsLearnable(new BaseMove(1.8f, 1.2f, Type.HEAVY_MELEE, 1.7f, 1.7f, 3f, 3f),
-				new DefaultSaiyanData(0f, 0f, 0f, 2f, 0, 0));
+		RegisterMoveAsLearnable(new BaseMeleeMove(1.8f, 1.2f, Type.HEAVY_MELEE, 1.7f, 1.7f, 3f, 3f),
+				new DefaultSaiyanData(0f, 0f, 0f, 2f, 0f, 0f));
+		
+		RegisterMoveAsLearnable(new BaseToggleableMove(Type.STATUS), new DefaultSaiyanData(0f, 0f, 0f, 0f, 2f, 0f));
 		
 	}
 	

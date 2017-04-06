@@ -10,6 +10,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import scala.util.Random;
 
 public class UseMoveMessageHandler implements IMessageHandler<UseMoveMessage, IMessage> {
 
@@ -25,9 +26,11 @@ public class UseMoveMessageHandler implements IMessageHandler<UseMoveMessage, IM
 				public void run(){
 					//sender.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null).UpdateFrom(message.sd);
 					//DefaultSaiyanData.UpdateStats(sender);
+					Random rand = new Random();
 					
-					BaseMove.UseServer(message.move, SaiyanPlayer.Get(sender), message.target);
-					BaseMove.UseCommon(message.move, SaiyanPlayer.Get(sender), message.target);
+					//message.target.world.playSound(ctx.getServerHandler().playerEntity, message.target.getPosition(), ModSounds.PUNCH_LIGHT, SoundCategory.PLAYERS, 1f, .9f + rand.nextFloat() * .2f);
+					BaseMeleeMove.UseServer(message.move, SaiyanPlayer.Get(sender), message.target);
+					BaseMeleeMove.UseCommon(message.move, SaiyanPlayer.Get(sender), message.target);
 				}
 			});
 			
@@ -38,6 +41,7 @@ public class UseMoveMessageHandler implements IMessageHandler<UseMoveMessage, IM
 				@Override
 				public void run(){
 					EntityPlayerSP player = Minecraft.getMinecraft().player;
+					
 					/*ISaiyanBattler data = player.getCapability(SaiyanBattlerProvider.BATTLER_CAP, null);
 					data.UpdateFrom(message.sd);
 					SaiyanPlayer splayer = SaiyanPlayer.Get((EntityPlayer)player);
