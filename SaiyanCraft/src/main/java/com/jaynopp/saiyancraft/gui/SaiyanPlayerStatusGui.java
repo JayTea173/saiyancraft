@@ -5,11 +5,16 @@ import java.util.List;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jaynopp.saiyancraft.IAction;
 import com.jaynopp.saiyancraft.SaiyanCraft;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.DefaultSaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.ISaiyanData;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SaiyanDataProvider;
 import com.jaynopp.saiyancraft.capabilities.saiyandata.SyncSaiyanDataMessage;
+import com.jaynopp.saiyancraft.init.ModLearnables;
+import com.jaynopp.saiyancraft.player.ILearnable;
+import com.jaynopp.saiyancraft.player.SaiyanPlayer;
+import com.jaynopp.saiyancraft.player.moves.ISaiyanMove;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -41,6 +46,9 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 	final int bTabsStart = 7;
 	int mouseX, mouseY;
 	ScrollView moveList;
+	
+	protected int centerX = (width / 2)- guiWidth / 2;
+	protected int centerY = (height / 2) - guiHeight / 2;
 	
 	public enum Tab {
 		STATS(0),
@@ -80,8 +88,8 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 	
 	protected void DrawMovesGUI(){
 		Minecraft.getMinecraft().renderEngine.bindTexture(bgTexture);
-		int centerX = (width / 2)- guiWidth / 2;
-		int centerY = (height / 2) - guiHeight / 2;
+		centerX = (width / 2)- guiWidth / 2;
+		centerY = (height / 2) - guiHeight / 2;
 		int statOffsetX = Minecraft.getMinecraft().player.isCreative() ? 24 : 4;
 		drawTexturedModalRect(centerX, centerY, 0, 0, guiWidth, guiHeight);
 		
@@ -100,8 +108,8 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 		//AddTabButton(new GuiButton(bTabsStart + tabButtons.size(), centerX + 36 * i, centerY, 36, 10, tabNames[i]));
 		
 		
-		int centerX = (width / 2)- guiWidth / 2;
-		int centerY = (height / 2) - guiHeight / 2;
+		centerX = (width / 2)- guiWidth / 2;
+		centerY = (height / 2) - guiHeight / 2;
 		Minecraft.getMinecraft().renderEngine.bindTexture(whiteTexture);
 		GL11.glPushMatrix();
 		GL11.glColor3f(0f, 1f, .5f);
@@ -115,8 +123,8 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 	
 	protected void DrawStatsGUI(){
 		Minecraft.getMinecraft().renderEngine.bindTexture(bgTexture);
-		int centerX = (width / 2)- guiWidth / 2;
-		int centerY = (height / 2) - guiHeight / 2;
+		centerX = (width / 2)- guiWidth / 2;
+		centerY = (height / 2) - guiHeight / 2;
 		int statOffsetX = Minecraft.getMinecraft().player.isCreative() ? 24 : 4;
 		drawTexturedModalRect(centerX, centerY, 0, 0, guiWidth, guiHeight);
 		Minecraft.getMinecraft().renderEngine.bindTexture(plTexture);
@@ -189,10 +197,32 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 	
 	}
 	
+	protected void GetAllLearnables() {
+		for (ILearnable learnable : ModLearnables.learnables){
+			
+		
+		}
+	}
+	
+	protected void GetAllMoves() {
+		moveList.Clear();
+		for (ISaiyanMove move : SaiyanPlayer.local.comboManager.moves){
+			ScrollViewItem item = moveList.AddItem(move, move.toString());
+			item.onClickDown = new IAction<ScrollViewItem, ScrollViewItem>(){
+
+				public ScrollViewItem Invoke(ScrollViewItem input) {
+					System.out.println("CLICK DOWN!");
+					return input;
+				}
+				
+			};
+		}
+	}
+	
 	@Override
 	public void initGui(){
-		int centerX = (width / 2)- guiWidth / 2;
-		int centerY = (height / 2) - guiHeight / 2;
+		centerX = (width / 2)- guiWidth / 2;
+		centerY = (height / 2) - guiHeight / 2;
 		
 		buttonList.clear();
 		tabButtons = new ArrayList<GuiButton>();
@@ -201,25 +231,29 @@ public class SaiyanPlayerStatusGui extends GuiScreen {
 			AddTabButton(new GuiButton(bTabsStart + tabButtons.size(), centerX + 36 * i, centerY, 36, 10, tabNames[i]));
 		}
 		moveList = new ScrollView(centerX, centerY + 12, guiWidth, guiHeight - 12, bTabsStart + tabButtons.size());
+		GetAllMoves();
 		//buttonList.add(moveList.RegisterScrollButton());
 		moveList.RegisterScrollButton();
-		
+		GetAllLearnables();
 		if (Minecraft.getMinecraft().player.isCreative()){
-			
-			buttonList.add(increaseVitalityButton = new GuiButton(-bIncreaseVitality, centerX + 4, centerY + 32, 6, 6, "-"));
-			buttonList.add(increaseEnduranceButton = new GuiButton(-bIncreaseEndurance, centerX + 4, centerY + 42, 6, 6, "-"));
-			buttonList.add(increaseSkillButton = new GuiButton(-bIncreaseSkill, centerX + 4, centerY + 52, 6, 6, "-"));
-			buttonList.add(increaseStrengthButton = new GuiButton(-bIncreaseStrength, centerX + 4, centerY + 62, 6, 6, "-"));
-			buttonList.add(increaseAgilityButton = new GuiButton(-bIncreaseAgility, centerX + 4, centerY + 72, 6, 6, "-"));
-			buttonList.add(increaseSpiritButton = new GuiButton(-bIncreaseSpirit, centerX + 4, centerY + 82, 6, 6, "-"));
-			buttonList.add(increaseVitalityButton = new GuiButton(bIncreaseVitality, centerX + 12, centerY + 32, 6, 6, "+"));
-			buttonList.add(increaseEnduranceButton = new GuiButton(bIncreaseEndurance, centerX + 12, centerY + 42, 6, 6, "+"));
-			buttonList.add(increaseSkillButton = new GuiButton(bIncreaseSkill, centerX + 12, centerY + 52, 6, 6, "+"));
-			buttonList.add(increaseStrengthButton = new GuiButton(bIncreaseStrength, centerX + 12, centerY + 62, 6, 6, "+"));
-			buttonList.add(increaseAgilityButton = new GuiButton(bIncreaseAgility, centerX + 12, centerY + 72, 6, 6, "+"));
-			buttonList.add(increaseSpiritButton = new GuiButton(bIncreaseSpirit, centerX + 12, centerY + 82, 6, 6, "+"));
+			CreateStatDebugButtons();
 		}
 		super.initGui();
+	}
+	
+	protected void CreateStatDebugButtons(){
+		buttonList.add(increaseVitalityButton = new GuiButton(-bIncreaseVitality, centerX + 4, centerY + 32, 6, 6, "-"));
+		buttonList.add(increaseEnduranceButton = new GuiButton(-bIncreaseEndurance, centerX + 4, centerY + 42, 6, 6, "-"));
+		buttonList.add(increaseSkillButton = new GuiButton(-bIncreaseSkill, centerX + 4, centerY + 52, 6, 6, "-"));
+		buttonList.add(increaseStrengthButton = new GuiButton(-bIncreaseStrength, centerX + 4, centerY + 62, 6, 6, "-"));
+		buttonList.add(increaseAgilityButton = new GuiButton(-bIncreaseAgility, centerX + 4, centerY + 72, 6, 6, "-"));
+		buttonList.add(increaseSpiritButton = new GuiButton(-bIncreaseSpirit, centerX + 4, centerY + 82, 6, 6, "-"));
+		buttonList.add(increaseVitalityButton = new GuiButton(bIncreaseVitality, centerX + 12, centerY + 32, 6, 6, "+"));
+		buttonList.add(increaseEnduranceButton = new GuiButton(bIncreaseEndurance, centerX + 12, centerY + 42, 6, 6, "+"));
+		buttonList.add(increaseSkillButton = new GuiButton(bIncreaseSkill, centerX + 12, centerY + 52, 6, 6, "+"));
+		buttonList.add(increaseStrengthButton = new GuiButton(bIncreaseStrength, centerX + 12, centerY + 62, 6, 6, "+"));
+		buttonList.add(increaseAgilityButton = new GuiButton(bIncreaseAgility, centerX + 12, centerY + 72, 6, 6, "+"));
+		buttonList.add(increaseSpiritButton = new GuiButton(bIncreaseSpirit, centerX + 12, centerY + 82, 6, 6, "+"));
 	}
 	
 	@Override
